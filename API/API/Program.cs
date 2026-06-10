@@ -1,3 +1,9 @@
+using API.Applications.Services;
+using API.Contexts;
+using API.Interfaces;
+using API.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +12,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
+builder.Services.AddScoped<TipoUsuarioService>();
 
 var app = builder.Build();
 
@@ -16,9 +27,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("CorsPolicy",
+//        builder =>
+//        {
+//            builder.AllowAnyOrigin()
+//            .AllowAnyHeader()
+//            .AllowAnyMethod();
+//        });
+//});
+
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//app.UseCors("CorsPolicy");
 
 app.MapControllers();
 
