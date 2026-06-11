@@ -1,5 +1,6 @@
 ﻿using API.Applications.Conversoes;
 using API.DTOs.TipoUsuarioDto;
+using API.Exceptions;
 using API.Interfaces;
 
 namespace API.Applications.Services
@@ -23,7 +24,7 @@ namespace API.Applications.Services
             var tipo = _repository.ObterPorId(id);
             if (tipo == null)
             {
-                return null;
+                throw new DomainException("Tipo Usuario não encontrado");
             }
             return TipoUsuarioConversao.ConverterParaDto(tipo);
         }
@@ -32,7 +33,7 @@ namespace API.Applications.Services
             var tipo = _repository.ObterPorNome(nome);
             if (tipo == null)
             {
-                return null;
+                throw new DomainException("Tipo Usuario não encontrado");
             }
             return TipoUsuarioConversao.ConverterParaDto(tipo);
         }
