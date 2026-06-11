@@ -28,6 +28,11 @@ namespace API.Repositories
             return _context.Usuario.FirstOrDefault(u => u.Email == email);
         }
 
+        public bool EmailExiste(string email)
+        {
+            return _context.Usuario.Any(u => u.Email == email);
+        }
+
         public void Cadastrar(Usuario usuario)
         {
             _context.Usuario.Add(usuario);

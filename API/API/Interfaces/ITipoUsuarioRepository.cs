@@ -7,5 +7,6 @@ namespace API.Interfaces
         List<TipoUsuario> Listar();
         TipoUsuario ObterPorId(Guid id);
         TipoUsuario ObterPorNome(string nome);
+        bool TipoUsuarioExiste(Guid id);
     }
 }

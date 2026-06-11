@@ -14,7 +14,7 @@ namespace API.Repositories
         }
         public List<TipoUsuario> Listar()
         {
-            return _context.TipoUsuario.AsNoTracking().ToList();    
+            return _context.TipoUsuario.AsNoTracking().ToList();
         }
 
         public TipoUsuario ObterPorId(Guid id)
@@ -25,6 +25,11 @@ namespace API.Repositories
         public TipoUsuario ObterPorNome(string nome)
         {
             return _context.TipoUsuario.FirstOrDefault(tu => tu.NomeTipoUsuario == nome);
+        }
+
+        public bool TipoUsuarioExiste(Guid id)
+        {
+            return _context.TipoUsuario.Any(tu => tu.TipoUsuarioID == id);
         }
     }
 }

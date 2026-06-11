@@ -3,7 +3,7 @@ using API.DTOs.TipoUsuarioDto;
 
 namespace API.Applications.Conversoes
 {
-    public class TipoUsuarioParaDto
+    public class TipoUsuarioConversao
     {
         public static LerTipoUsuarioDto ConverterParaDto(TipoUsuario tipo)
         {

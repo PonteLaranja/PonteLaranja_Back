@@ -15,7 +15,7 @@ namespace API.Applications.Services
 
         public List<LerTipoUsuarioDto> Listar()
         {
-            return _repository.Listar().Select(t => TipoUsuarioParaDto.ConverterParaDto(t)).ToList();
+            return _repository.Listar().Select(t => TipoUsuarioConversao.ConverterParaDto(t)).ToList();
         }
 
         public LerTipoUsuarioDto ObterPorId(Guid id)
@@ -25,7 +25,7 @@ namespace API.Applications.Services
             {
                 return null;
             }
-            return TipoUsuarioParaDto.ConverterParaDto(tipo);
+            return TipoUsuarioConversao.ConverterParaDto(tipo);
         }
         public LerTipoUsuarioDto ObterPorNome(string nome)
         {
@@ -34,7 +34,7 @@ namespace API.Applications.Services
             {
                 return null;
             }
-            return TipoUsuarioParaDto.ConverterParaDto(tipo);
+            return TipoUsuarioConversao.ConverterParaDto(tipo);
         }
     }
 }

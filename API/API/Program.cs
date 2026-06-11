@@ -18,6 +18,9 @@ builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlSe
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
 builder.Services.AddScoped<TipoUsuarioService>();
 
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<UsuarioService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
