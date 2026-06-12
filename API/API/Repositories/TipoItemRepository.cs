@@ -17,6 +17,11 @@ namespace API.Repositories
         {
             return _context.TipoItem.AsNoTracking().ToList();
         }
+
+        public bool TipoItemExiste(Guid id)
+        {
+            return _context.TipoItem.Any(t => t.TipoItemID == id);
+        }
         public TipoItem ObterPorNome(string nome)
         {
             return _context.TipoItem.AsNoTracking().FirstOrDefault(t => t.NomeTipoItem == nome);

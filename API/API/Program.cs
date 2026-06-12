@@ -16,6 +16,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
+builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
+builder.Services.AddScoped<TipoUsuarioService>();
+
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<UsuarioService>();
+
+builder.Services.AddScoped<ITipoMedidaRepository, TipoMedidaRepository>();
+builder.Services.AddScoped<TipoMedidaService>();
+
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ItemService>();
 
@@ -28,9 +37,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("CorsPolicy",
+//        builder =>
+//        {
+//            builder.AllowAnyOrigin()
+//            .AllowAnyHeader()
+//            .AllowAnyMethod();
+//        });
+//});
+
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//app.UseCors("CorsPolicy");
 
 app.MapControllers();
 

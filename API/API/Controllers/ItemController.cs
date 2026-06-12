@@ -24,11 +24,11 @@ namespace API.Controllers
         }
 
         [HttpGet("listarTipo/{id}")]
-        public ActionResult<List<LerItemDto>> ListarPorTipo(Guid idTipo)
+        public ActionResult<List<LerItemDto>> ListarPorTipo(Guid id)
         {
             try
             {
-                return Ok(_itemService.ListarPorTipo(idTipo));
+                return Ok(_itemService.ListarPorTipo(id));
             } catch(DomainException ex)
             {
                 return NotFound(ex.Message);
@@ -61,7 +61,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult Deletar(Guid id)
         {
             try

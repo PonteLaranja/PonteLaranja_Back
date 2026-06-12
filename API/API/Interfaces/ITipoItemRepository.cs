@@ -6,5 +6,6 @@ namespace API.Interfaces
     {
         public List<TipoItem> Listar();
         public TipoItem ObterPorNome(string nome);
+        bool TipoItemExiste(Guid id);
     }
 }

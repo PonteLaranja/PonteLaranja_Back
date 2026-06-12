@@ -2,7 +2,6 @@
 {
     public class AtualizarItemDto
     {
-        public Guid ItemID { get; set; }
         public string NomeItem { get; set; }
         public DateTime? DataRecebimento { get; set; }
         public DateTime? DataDoacao { get; set; }
@@ -11,5 +10,6 @@
         public Guid? TipoItemID { get; set; }
         public Guid? TipoMedidaID { get; set; }
         public Guid? UsuarioID { get; set; }
+        public Guid UnidadeID { get; set; }
     }
 }

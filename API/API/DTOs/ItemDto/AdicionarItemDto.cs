@@ -10,5 +10,6 @@
         public Guid TipoItemID { get; set; }
         public Guid TipoMedidaID { get; set; }
         public Guid UsuarioID { get; set; }
+        public Guid UnidadeID { get; set; }
     }
 }
