@@ -28,6 +28,10 @@ builder.Services.AddScoped<TipoMedidaService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ItemService>();
 
+builder.Services.AddScoped<IEstadoTransferenciaRepository, EstadoTransferenciaRepository>();
+builder.Services.AddScoped<EstadoTransferenciaService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
