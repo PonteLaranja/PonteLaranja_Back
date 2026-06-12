@@ -22,6 +22,7 @@ namespace API.Controllers
             return Ok(_service.Listar());
         }
 
+        [HttpGet("nome/{nome}")]
         public ActionResult<LerTipoMedidaDto> ObterPorNome(string nome)
         {
             try

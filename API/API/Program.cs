@@ -21,6 +21,9 @@ builder.Services.AddScoped<TipoUsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
 
+builder.Services.AddScoped<ITipoMedidaRepository, TipoMedidaRepository>();
+builder.Services.AddScoped<TipoMedidaService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
