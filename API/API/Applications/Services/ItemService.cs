@@ -38,10 +38,10 @@ namespace API.Applications.Services
                 throw new DomainException("Usuário não encontrado.");
             }
 
-            if (unidadeId == null && !_unidadeRepository.UnidadeExiste(unidadeId.Value))
-            {
-                throw new DomainException("Unidade não encontrada.");
-            }
+            //if (unidadeId == null && !_unidadeRepository.UnidadeExiste(unidadeId.Value))
+            //{
+            //    throw new DomainException("Unidade não encontrada.");
+            //}
             return true;
         }
         public List<LerItemDto> Listar()
