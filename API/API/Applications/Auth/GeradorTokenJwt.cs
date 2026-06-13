@@ -1,0 +1,61 @@
+﻿using API.Domains;
+using System.Text;
+using API.Exceptions;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+
+namespace API.Applications.Auth
+{
+    public class GeradorTokenJwt
+    {
+        
+            private readonly IConfiguration _config;
+
+            
+            public GeradorTokenJwt(IConfiguration config)
+            {
+                _config = config;
+            }
+
+            public string GerarToken(Usuario usuario)
+            {
+                var chave = _config["Jwt:Key"]!;
+
+                var issuer = _config["Jwt:Issuer"]!;
+
+                var audience = _config["Jwt:Audience"]!;
+
+                var expiraEmMinutos = int.Parse(_config["Jwt:ExpiraEmMinutos"]!);
+
+                var keyBytes = Encoding.UTF8.GetBytes(chave);
+
+                if (keyBytes.Length < 32)
+                    throw new DomainException("Erro Jwt");
+
+                var securityKey = new SymmetricSecurityKey(keyBytes);
+
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, usuario.UsuarioID.ToString()),
+
+                    new Claim(ClaimTypes.Name, usuario.Nome),
+
+                    new Claim(ClaimTypes.Email, usuario.Email)
+                };
+
+                var token = new JwtSecurityToken(
+                    issuer: issuer,
+                    audience: audience,
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(expiraEmMinutos),
+                    signingCredentials: credentials
+                    );
+
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+        }
+}
+

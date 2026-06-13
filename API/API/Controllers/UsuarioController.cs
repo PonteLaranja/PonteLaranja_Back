@@ -20,7 +20,7 @@ namespace API.Controllers
         [HttpGet]
         public ActionResult<List<LerUsuarioDto>> Listar()
         {
-            return Ok(_service.Listar());
+           return Ok(_service.Listar());
         }
 
         [HttpGet("{id}")]

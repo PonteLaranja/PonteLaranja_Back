@@ -1,3 +1,4 @@
+using API.Applications.Auth;
 using API.Applications.Services;
 using API.Contexts;
 using API.Interfaces;
@@ -20,6 +21,9 @@ builder.Services.AddScoped<TipoUsuarioService>();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
+
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<GeradorTokenJwt>();
 
 var app = builder.Build();
 

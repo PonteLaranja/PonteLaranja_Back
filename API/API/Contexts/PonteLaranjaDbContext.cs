@@ -42,9 +42,9 @@ public partial class PonteLaranjaDbContext : DbContext
     {
         modelBuilder.Entity<EstadoTransferencia>(entity =>
         {
-            entity.HasKey(e => e.EstadoTransID).HasName("PK__EstadoTr__7A6BD6E396EA7347");
+            entity.HasKey(e => e.EstadoTransID).HasName("PK__EstadoTr__7A6BD6E32A6030B5");
 
-            entity.HasIndex(e => e.EstadoTransNome, "UQ__EstadoTr__06DAC07F1DA7FDDA").IsUnique();
+            entity.HasIndex(e => e.EstadoTransNome, "UQ__EstadoTr__06DAC07F1867437C").IsUnique();
 
             entity.Property(e => e.EstadoTransID).HasDefaultValueSql("(newid())");
             entity.Property(e => e.EstadoTransNome)
@@ -54,7 +54,7 @@ public partial class PonteLaranjaDbContext : DbContext
 
         modelBuilder.Entity<Item>(entity =>
         {
-            entity.HasKey(e => e.ItemID).HasName("PK__Item__727E83EBC50BF661");
+            entity.HasKey(e => e.ItemID).HasName("PK__Item__727E83EB11277AB3");
 
             entity.Property(e => e.ItemID).HasDefaultValueSql("(newid())");
             entity.Property(e => e.DataRecebimento).HasDefaultValueSql("(sysdatetime())");
@@ -82,9 +82,9 @@ public partial class PonteLaranjaDbContext : DbContext
 
         modelBuilder.Entity<TipoItem>(entity =>
         {
-            entity.HasKey(e => e.TipoItemID).HasName("PK__TipoItem__FC89051B3CA32125");
+            entity.HasKey(e => e.TipoItemID).HasName("PK__TipoItem__FC89051B636F5336");
 
-            entity.HasIndex(e => e.NomeTipoItem, "UQ__TipoItem__87A4476EDB04AEA7").IsUnique();
+            entity.HasIndex(e => e.NomeTipoItem, "UQ__TipoItem__87A4476E9544BDAE").IsUnique();
 
             entity.Property(e => e.TipoItemID).HasDefaultValueSql("(newid())");
             entity.Property(e => e.NomeTipoItem)
@@ -94,9 +94,9 @@ public partial class PonteLaranjaDbContext : DbContext
 
         modelBuilder.Entity<TipoMedida>(entity =>
         {
-            entity.HasKey(e => e.TipoMedidaID).HasName("PK__TipoMedi__B9250FC80027E560");
+            entity.HasKey(e => e.TipoMedidaID).HasName("PK__TipoMedi__B9250FC85180A229");
 
-            entity.HasIndex(e => e.NomeTipoMedida, "UQ__TipoMedi__30C87580EB14A783").IsUnique();
+            entity.HasIndex(e => e.NomeTipoMedida, "UQ__TipoMedi__30C87580B8A951B8").IsUnique();
 
             entity.Property(e => e.TipoMedidaID).HasDefaultValueSql("(newid())");
             entity.Property(e => e.NomeTipoMedida)
@@ -106,9 +106,9 @@ public partial class PonteLaranjaDbContext : DbContext
 
         modelBuilder.Entity<TipoUnidade>(entity =>
         {
-            entity.HasKey(e => e.TipoUnidadeID).HasName("PK__TipoUnid__3940ED862B092667");
+            entity.HasKey(e => e.TipoUnidadeID).HasName("PK__TipoUnid__3940ED86DC8DD9EB");
 
-            entity.HasIndex(e => e.NomeTipoUnidade, "UQ__TipoUnid__144BF083B1965963").IsUnique();
+            entity.HasIndex(e => e.NomeTipoUnidade, "UQ__TipoUnid__144BF08305B5880E").IsUnique();
 
             entity.Property(e => e.TipoUnidadeID).HasDefaultValueSql("(newid())");
             entity.Property(e => e.NomeTipoUnidade)
@@ -118,9 +118,9 @@ public partial class PonteLaranjaDbContext : DbContext
 
         modelBuilder.Entity<TipoUsuario>(entity =>
         {
-            entity.HasKey(e => e.TipoUsuarioID).HasName("PK__TipoUsua__7F22C70212CF1874");
+            entity.HasKey(e => e.TipoUsuarioID).HasName("PK__TipoUsua__7F22C702E1B6B391");
 
-            entity.HasIndex(e => e.NomeTipoUsuario, "UQ__TipoUsua__C6FB90A878EDB917").IsUnique();
+            entity.HasIndex(e => e.NomeTipoUsuario, "UQ__TipoUsua__C6FB90A809ADC298").IsUnique();
 
             entity.Property(e => e.TipoUsuarioID).HasDefaultValueSql("(newid())");
             entity.Property(e => e.NomeTipoUsuario)
@@ -130,7 +130,7 @@ public partial class PonteLaranjaDbContext : DbContext
 
         modelBuilder.Entity<Transferencia>(entity =>
         {
-            entity.HasKey(e => e.TransferenciaID).HasName("PK__Transfer__E5B4F5F248E1C3FF");
+            entity.HasKey(e => e.TransferenciaID).HasName("PK__Transfer__E5B4F5F2FD2BB76B");
 
             entity.ToTable(tb => tb.HasTrigger("trg_Aprovacao_Item"));
 
@@ -159,9 +159,9 @@ public partial class PonteLaranjaDbContext : DbContext
 
         modelBuilder.Entity<Unidade>(entity =>
         {
-            entity.HasKey(e => e.UnidadeID).HasName("PK__Unidade__6EE52BD967E08F8B");
+            entity.HasKey(e => e.UnidadeID).HasName("PK__Unidade__6EE52BD9ACE007BD");
 
-            entity.HasIndex(e => e.NomeUnidade, "UQ__Unidade__EE30D366D8712BEE").IsUnique();
+            entity.HasIndex(e => e.NomeUnidade, "UQ__Unidade__EE30D3660FB6A522").IsUnique();
 
             entity.Property(e => e.UnidadeID).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CEP)
@@ -184,9 +184,9 @@ public partial class PonteLaranjaDbContext : DbContext
 
         modelBuilder.Entity<Usuario>(entity =>
         {
-            entity.HasKey(e => e.UsuarioID).HasName("PK__Usuario__2B3DE7984D300B22");
+            entity.HasKey(e => e.UsuarioID).HasName("PK__Usuario__2B3DE798BBC0608D");
 
-            entity.HasIndex(e => e.Email, "UQ__Usuario__A9D105341ACAC96A").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Usuario__A9D10534292C1376").IsUnique();
 
             entity.Property(e => e.UsuarioID).HasDefaultValueSql("(newid())");
             entity.Property(e => e.DataCriacao).HasDefaultValueSql("(sysdatetime())");
