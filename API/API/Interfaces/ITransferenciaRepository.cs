@@ -1,6 +1,16 @@
-﻿namespace API.Interfaces
+﻿using API.Domains;
+
+namespace API.Interfaces
 {
-    public class ITransferenciaRepository
+    public interface ITransferenciaRepository
     {
+        List<Transferencia> Listar();
+
+        Transferencia ObterPorId(Guid id);
+        List<Transferencia> ObterPorUnidadeDestino(Guid id);
+        List<Transferencia> ObterPorUnidadeOrigem(Guid id);
+        void Cadastrar(Transferencia transferencia);
+
+       
     }
 }
