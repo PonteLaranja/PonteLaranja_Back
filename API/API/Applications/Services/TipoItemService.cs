@@ -1,4 +1,6 @@
-﻿using API.Interfaces;
+﻿using API.Applications.Conversoes;
+using API.DTOs.TipoItemDto;
+using API.Interfaces;
 
 namespace API.Applications.Services
 {
@@ -10,6 +12,14 @@ namespace API.Applications.Services
             _repository = repository;
         }
 
-        p
+        public List<LerTipoItemDto> Listar()
+        {
+            return _repository.Listar().Select(l => TipoItemConversao.ConverterParaDto(l)).ToList();
+        }
+
+        public LerTipoItemDto ObterPorNome(string nome)
+        {
+            return TipoItemConversao.ConverterParaDto(_repository.ObterPorNome(nome));
+        }
     }
 }
