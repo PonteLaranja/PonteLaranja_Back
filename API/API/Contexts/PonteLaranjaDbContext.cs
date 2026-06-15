@@ -30,7 +30,7 @@ public partial class PonteLaranjaDbContext : DbContext
 
     public virtual DbSet<Transferencia> Transferencia { get; set; }
 
-    public virtual DbSet<CadastrarOuAtualizarUnidadeDto> Unidade { get; set; }
+    public virtual DbSet<Unidade> Unidade { get; set; }
 
     public virtual DbSet<Usuario> Usuario { get; set; }
 
@@ -157,7 +157,7 @@ public partial class PonteLaranjaDbContext : DbContext
                 .HasConstraintName("Fk_UnidadeOrigemID");
         });
 
-        modelBuilder.Entity<CadastrarOuAtualizarUnidadeDto>(entity =>
+        modelBuilder.Entity<Unidade>(entity =>
         {
             entity.HasKey(e => e.UnidadeID).HasName("PK__Unidade__6EE52BD967E08F8B");
 

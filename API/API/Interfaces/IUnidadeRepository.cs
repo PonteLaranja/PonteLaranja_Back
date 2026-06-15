@@ -4,22 +4,22 @@ namespace API.Interfaces
 {
     public interface IUnidadeRepository
     {
-        List<CadastrarOuAtualizarUnidadeDto> Listar();
+        List<Unidade> Listar();
 
-        CadastrarOuAtualizarUnidadeDto BuscarPorGuid(Guid id);
+        Unidade BuscarPorGuid(Guid id);
 
-        CadastrarOuAtualizarUnidadeDto BuscarPorNome(string nomeUnidade);
+        Unidade BuscarPorNome(string nomeUnidade);
 
-        CadastrarOuAtualizarUnidadeDto BuscarPorCEP(string cep);
+        Unidade BuscarPorCEP(string cep);
 
         Usuario BuscarUsuario(Guid id);
 
         TipoUnidade BuscarTipoUnidade(Guid id);
 
-        void Cadastrar(CadastrarOuAtualizarUnidadeDto unidadeNova, Guid responsavelId, Guid tipoUnidadeId);
+        void Cadastrar(Unidade unidadeNova, Guid responsavelId, Guid tipoUnidadeId);
 
-        void Atualizar(CadastrarOuAtualizarUnidadeDto unidadeAtualizada, Guid responsavelId, Guid tipoUnidadeId);
+        void Atualizar(Unidade unidadeAtualizada, Guid responsavelId, Guid tipoUnidadeId);
 
-        void Deletar(Guid unidadeId);
+        void Inativar(Guid unidadeId);
     }
 }

@@ -1,3 +1,9 @@
+using API.Applications.Services;
+using API.Interfaces;
+using API.Repositories;
+using Microsoft.EntityFrameworkCore;
+using API.Contexts;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+// CONEXÃO COM O BANCO
+builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+// UNIDADE
+builder.Services.AddScoped<IUnidadeRepository, UnidadeRepository>();
+builder.Services.AddScoped<UnidadeService>();
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();

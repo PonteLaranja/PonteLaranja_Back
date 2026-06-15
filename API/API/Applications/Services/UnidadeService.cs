@@ -97,36 +97,39 @@ namespace API.Applications.Services
 
             Unidade unidadeCadastrada = UnidadeConversao.CadastrarOuAtualizar(criarDto);
 
-            _repository.Cadastrar(unidadeCadastrada);
+            _repository.Cadastrar(unidadeCadastrada, unidadeCadastrada.UsuarioResponsavelID, unidadeCadastrada.TipoUnidadeID);
         }
 
         public void Atualizar(Guid id, CadastrarUnidadeDto criarDto)
         {
-            CadastrarOuAtualizarUnidadeDto unidade = BuscarPorGuid(unidadeAtualizada.UnidadeID);
+            Unidade unidade = _repository.BuscarPorGuid(id);
             if (unidade == null)
             {
-                throw new DomainException("Unidade não encontrada ou inexistente.");
+                throw new DomainException("Unidade não encontrada.");
             }
 
-            Usuario usuario = _repository.BuscarUsuario(responsavelId);
+            Usuario usuario = _repository.BuscarUsuario(criarDto.UsuarioResponsavelDto);
             if (usuario == null)
             {
-                return;
+                throw new DomainException("Usuário não encontrado.");
             }
 
-            TipoUnidade tipoUnidade = _repository.BuscarTipoUnidade(tipoUnidadeId);
+            TipoUnidade tipoUnidade = _repository.BuscarTipoUnidade(criarDto.TipoUnidadeDto);
             if (tipoUnidade == null)
             {
-                return;
+                throw new DomainException("Tipo de unidade não encontrado.");
             }
 
-            ValidarCampo.NomeUnidade(unidadeAtualizada.NomeUnidade);
-            ValidarCampo.CEP(unidadeAtualizada.CEP);
+            ValidarCampo.NomeUnidade(criarDto.NomeUnidadeDto);
+            ValidarCampo.CEP(criarDto.CEPDto);
 
-            _repository.Atualizar(unidadeAtualizada, responsavelId, tipoUnidadeId);
+            Unidade unidadeAtualizada = UnidadeConversao.CadastrarOuAtualizar(criarDto, id);
+            unidadeAtualizada.UnidadeID = id;
+
+            _repository.Atualizar(unidadeAtualizada, criarDto.UsuarioResponsavelDto, criarDto.TipoUnidadeDto);
         }
 
-        public void Deletar(Guid unidadeId)
+        public void Inativar(Guid unidadeId)
         {
             Unidade unidade = _repository.BuscarPorGuid(unidadeId);
 
@@ -135,7 +138,7 @@ namespace API.Applications.Services
                 throw new DomainException("Unidade não encontrada.");
             }
 
-            _repository.Deletar(unidadeId);
+            _repository.Inativar(unidadeId);
         }
     }
 }

@@ -17,10 +17,11 @@ namespace API.Applications.Conversoes
             };
         }
 
-        public static void CadastrarOuAtualizar(CadastrarUnidadeDto criarDto)
+        public static Unidade CadastrarOuAtualizar(CadastrarUnidadeDto criarDto, Guid? id = null)
         {
-            Unidade unidade = new Unidade
+            return new Unidade
             {
+                UnidadeID = id ?? Guid.Empty,
                 NomeUnidade = criarDto.NomeUnidadeDto,
                 CEP = criarDto.CEPDto,
                 UsuarioResponsavelID = criarDto.UsuarioResponsavelDto,

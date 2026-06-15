@@ -3,6 +3,7 @@ using API.Domains;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
+using System.Xml.Linq;
 
 namespace API.Repositories
 {
@@ -15,7 +16,7 @@ namespace API.Repositories
             _context = context;
         }
 
-        public List<CadastrarOuAtualizarUnidadeDto> Listar()
+        public List<Unidade> Listar()
         {
             return _context.Unidade
                 .OrderBy(Unidade => Unidade.NomeUnidade)
@@ -23,21 +24,27 @@ namespace API.Repositories
                 .ToList();
         }
 
-        public CadastrarOuAtualizarUnidadeDto BuscarPorGuid(Guid id)
+        public Unidade BuscarPorGuid(Guid id)
         {
             return _context.Unidade
                 .AsNoTracking()
                 .FirstOrDefault(Unidade => Unidade.UnidadeID == id);
         }
 
-        public CadastrarOuAtualizarUnidadeDto BuscarPorCEP(string cep)
+        public Unidade BuscarPorGuidComChangeTracker(Guid id)
+        {
+            return _context.Unidade
+                .FirstOrDefault(Unidade => Unidade.UnidadeID == id);
+        }
+
+        public Unidade BuscarPorCEP(string cep)
         {
             return _context.Unidade
                 .AsNoTracking()
                 .FirstOrDefault(Unidade => Unidade.CEP == cep);
         }
 
-        public CadastrarOuAtualizarUnidadeDto BuscarPorNome(string nomeUnidade)
+        public Unidade BuscarPorNome(string nomeUnidade)
         {
             return _context.Unidade
                 .AsNoTracking()
@@ -47,21 +54,19 @@ namespace API.Repositories
         public Usuario BuscarUsuario(Guid id)
         {
             return _context.Usuario
-                .AsNoTracking()
                 .FirstOrDefault(Usuario => Usuario.UsuarioID == id);
         }
 
         public TipoUnidade BuscarTipoUnidade(Guid id)
         {
             return _context.TipoUnidade
-                .AsNoTracking()
                 .FirstOrDefault(TipoUnidade => TipoUnidade.TipoUnidadeID == id);
         }
 
-        public void Cadastrar(CadastrarOuAtualizarUnidadeDto unidadeNova, Guid responsavelId, Guid tipoUnidadeId)
+        public void Cadastrar(Unidade unidadeNova, Guid responsavelId, Guid tipoUnidadeId)
         {
-            CadastrarOuAtualizarUnidadeDto unidade = BuscarPorGuid(unidadeNova.UnidadeID);
-            if (unidade == null)
+            Unidade unidade = BuscarPorGuidComChangeTracker(unidadeNova.UnidadeID);
+            if (unidade != null)
             {
                 return;
             }
@@ -78,13 +83,20 @@ namespace API.Repositories
                 return;
             }
 
-            _context.Unidade.Add(unidadeNova);
+            Unidade unidadeCadastrada = new Unidade();
+
+            unidadeCadastrada.NomeUnidade = unidadeNova.NomeUnidade;
+            unidadeCadastrada.CEP = unidadeNova.CEP;
+            unidadeCadastrada.UsuarioResponsavelID = responsavelId;
+            unidadeCadastrada.TipoUnidadeID = tipoUnidadeId;
+
+            _context.Add(unidadeCadastrada);
             _context.SaveChanges();
         }
 
-        public void Atualizar(CadastrarOuAtualizarUnidadeDto unidadeAtualizada, Guid responsavelId, Guid tipoUnidadeId)
+        public void Atualizar(Unidade unidadeAtualizada, Guid responsavelId, Guid tipoUnidadeId)
         {
-            CadastrarOuAtualizarUnidadeDto unidade = BuscarPorGuid(unidadeAtualizada.UnidadeID);
+            Unidade unidade = BuscarPorGuidComChangeTracker(unidadeAtualizada.UnidadeID);
             if (unidade == null)
             {
                 return;
@@ -110,15 +122,15 @@ namespace API.Repositories
             _context.SaveChanges();
         }
 
-        public void Deletar(Guid unidadeId)
+        public void Inativar(Guid unidadeId)
         {
-            CadastrarOuAtualizarUnidadeDto unidade = BuscarPorGuid(unidadeId);
+            Unidade unidade = BuscarPorGuid(unidadeId);
             if (unidade == null)
             {
                 return;
             }
 
-            _context.Unidade.Remove(unidade);
+            _context.Remove(unidade);
             _context.SaveChanges();
         }
     }
