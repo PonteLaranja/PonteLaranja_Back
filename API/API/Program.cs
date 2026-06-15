@@ -1,4 +1,3 @@
-using API.Applications.Auth;
 using API.Applications.Services;
 using API.Contexts;
 using API.Interfaces;
@@ -14,6 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
@@ -22,8 +22,11 @@ builder.Services.AddScoped<TipoUsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
 
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<GeradorTokenJwt>();
+builder.Services.AddScoped<ITipoMedidaRepository, TipoMedidaRepository>();
+builder.Services.AddScoped<TipoMedidaService>();
+
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<ItemService>();
 
 var app = builder.Build();
 

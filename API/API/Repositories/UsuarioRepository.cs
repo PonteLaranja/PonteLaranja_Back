@@ -23,6 +23,11 @@ namespace API.Repositories
             return _context.Usuario.Find(id);
         }
 
+        public bool UsuarioExiste(Guid id)
+        {
+            return _context.Usuario.Any(u => u.UsuarioID == id);
+        }
+
         public Usuario ObterPorEmail(string email)
         {
             return _context.Usuario.FirstOrDefault(u => u.Email == email);
