@@ -25,11 +25,17 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ITipoMedidaRepository, TipoMedidaRepository>();
 builder.Services.AddScoped<TipoMedidaService>();
 
+builder.Services.AddScoped<ITipoItemRepository, TipoItemRepository>();
+builder.Services.AddScoped<TipoItemService>();
+
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ItemService>();
 
 builder.Services.AddScoped<IEstadoTransferenciaRepository, EstadoTransferenciaRepository>();
 builder.Services.AddScoped<EstadoTransferenciaService>();
+
+builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepository>();
+builder.Services.AddScoped<TransferenciaService>();
 
 
 var app = builder.Build();
