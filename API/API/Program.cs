@@ -1,3 +1,4 @@
+using API.Applications.Auth;
 using API.Applications.Services;
 using API.Contexts;
 using API.Interfaces;
@@ -22,6 +23,9 @@ builder.Services.AddScoped<TipoUsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
 
+builder.Services.AddScoped<IUnidadeRepository, UnidadeRepository>();
+builder.Services.AddScoped<UnidadeService>();
+
 builder.Services.AddScoped<ITipoMedidaRepository, TipoMedidaRepository>();
 builder.Services.AddScoped<TipoMedidaService>();
 
@@ -36,6 +40,9 @@ builder.Services.AddScoped<EstadoTransferenciaService>();
 
 builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepository>();
 builder.Services.AddScoped<TransferenciaService>();
+
+builder.Services.AddScoped<GeradorTokenJwt>();
+builder.Services.AddScoped<AuthService>();
 
 
 var app = builder.Build();
