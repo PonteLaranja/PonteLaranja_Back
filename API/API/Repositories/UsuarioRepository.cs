@@ -20,7 +20,9 @@ namespace API.Repositories
 
         public Usuario ObterPorId(Guid id)
         {
-            return _context.Usuario.Find(id);
+            return _context.Usuario
+                .Include(u => u.TipoUsuario)
+                .FirstOrDefault(u => u.UsuarioID == id);
         }
 
         public bool UsuarioExiste(Guid id)

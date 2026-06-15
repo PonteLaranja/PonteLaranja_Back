@@ -85,6 +85,7 @@ namespace API.Repositories
             transferenciaExistente.UnidadeDestinoID = transferencia.UnidadeDestinoID;
             transferenciaExistente.DataEnvio = transferencia.DataEnvio;
             transferenciaExistente.ItemID = transferencia.ItemID;
+            transferenciaExistente.EstadoTransferenciaID = transferencia.EstadoTransferenciaID;
 
             _context.SaveChanges();
         }
