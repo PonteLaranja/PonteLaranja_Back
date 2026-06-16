@@ -59,7 +59,14 @@ namespace API.Applications.Services
                 throw new DomainException("Unidade não existe.");
             }
 
+            var estado = _estadoTransferenciaRepository.ObterPorNome("Pendente");
 
+            if(estado == null)
+            {
+                throw new DomainException("Estado 'Pendente' não encontrado.");
+            }
+
+            transferencia.EstadoTransferenciaID = estado.EstadoTransID;
 
             if (usuario.TipoUsuario.NomeTipoUsuario == "Doador")
             {
@@ -108,7 +115,12 @@ namespace API.Applications.Services
 
             if (estado == null)
             {
-                throw new DomainException("Status de resposta da transferência não encontrado.");
+                throw new DomainException("Estado de resposta da transferência não encontrado.");
+            }
+
+            if (_estadoTransferenciaRepository.EstadoTransferenciaExiste(estado.EstadoTransID))
+            {
+                throw new DomainException("Estado Transferencia não encontrado.");
             }
 
             transferencia.EstadoTransferenciaID = estado.EstadoTransID;
