@@ -60,6 +60,10 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
 
 //Unidade
+builder.Services.AddScoped<ITipoUnidadeRepository, TipoUnidadeRepository>();
+builder.Services.AddScoped<TipoUnidadeService>();
+
+//Unidade
 builder.Services.AddScoped<IUnidadeRepository, UnidadeRepository>();
 builder.Services.AddScoped<UnidadeService>();
 
