@@ -60,7 +60,7 @@ namespace API.Repositories
             _context.SaveChanges();
         }
 
-        public void Deletar(string id)
+        public void Deletar(Guid id)
         {
             Usuario usuario = _context.Usuario.Find(id);
             if (usuario == null)

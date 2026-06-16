@@ -11,6 +11,6 @@ namespace API.Interfaces
         bool UsuarioExiste(Guid id);
         void Cadastrar(Usuario usuario);
         void Atualizar(Guid id, Usuario usuario);
-        void Deletar(string id);
+        void Deletar(Guid id);
     }
 }

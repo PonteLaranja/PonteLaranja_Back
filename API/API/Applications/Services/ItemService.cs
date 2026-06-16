@@ -110,7 +110,7 @@ namespace API.Applications.Services
             _repository.Atualizar(itemBanco);
         }
 
-        public void Deletar(Guid id)
+        public void Inativar(Guid id)
         {
             var itemBanco = _repository.ObterPorId(id);
             if (itemBanco == null)

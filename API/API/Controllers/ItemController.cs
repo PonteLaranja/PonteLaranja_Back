@@ -1,6 +1,7 @@
 ﻿using API.Applications.Services;
 using API.DTOs.ItemDto;
 using API.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,6 +36,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Adicionar(AdicionarItemDto criarItemDto)
         {
@@ -48,6 +50,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public ActionResult Atualizar(Guid id, AtualizarItemDto atualizarItemDto)
         {
@@ -61,12 +64,13 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
-        public ActionResult Deletar(Guid id)
+        public ActionResult Inativar(Guid id)
         {
             try
             {
-                _itemService.Deletar(id);
+                _itemService.Inativar(id);
                 return NoContent();
             } catch(DomainException ex)
             {
