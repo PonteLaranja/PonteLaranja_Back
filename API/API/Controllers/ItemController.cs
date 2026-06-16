@@ -24,6 +24,7 @@ namespace API.Controllers
             return Ok(_itemService.Listar());
         }
 
+        [Authorize(Roles = "Responsavel,Administrador")]
         [HttpGet("listarTipo/{id}")]
         public ActionResult<List<LerItemDto>> ListarPorTipo(Guid id)
         {
@@ -36,7 +37,21 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Responsavel,Administrador")]
+        [HttpGet("listarPorUsuario/{id}")]
+        public ActionResult<List<LerItemDto>> ListarPorUsuario(Guid id)
+        {
+            try
+            {
+                return Ok(_itemService.ListarPorUsuario(id));
+            }
+            catch (DomainException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Responsavel,Administrador")]
         [HttpPost]
         public ActionResult Adicionar(AdicionarItemDto criarItemDto)
         {
@@ -50,7 +65,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Responsavel,Administrador")]
         [HttpPut("{id}")]
         public ActionResult Atualizar(Guid id, AtualizarItemDto atualizarItemDto)
         {
@@ -64,7 +79,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Responsavel,Administrador")]
         [HttpDelete("{id}")]
         public ActionResult Inativar(Guid id)
         {

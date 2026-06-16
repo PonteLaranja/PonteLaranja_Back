@@ -20,6 +20,7 @@ namespace API.Repositories
                 .Include(i => i.Unidade)
                 .Include(i => i.TipoMedida)
                 .Include(i => i.Usuario)
+                .Where(i => i.Ativo)
                 .AsNoTracking()
                 .ToList();
         }
@@ -43,6 +44,7 @@ namespace API.Repositories
                 .Include(i => i.Unidade)
                 .Include(i => i.TipoMedida)
                 .Include(i => i.Usuario)
+                .Where(i => i.Ativo)
                 .AsNoTracking()
                 .ToList();
         }
@@ -94,6 +96,17 @@ namespace API.Repositories
             itemBanco.UnidadeID = item.UnidadeID;
 
             _context.SaveChanges();
+        }
+
+        public List<Item> ListarPorDoador(Guid usuarioId)
+        {
+            return _context.Item
+                 .Include(i => i.TipoItem)
+                .Include(i => i.Unidade)
+                .Include(i => i.TipoMedida)
+                .Include(i => i.Usuario)
+                .Where(i => i.UsuarioID == usuarioId)
+                .ToList();
         }
     }
 }

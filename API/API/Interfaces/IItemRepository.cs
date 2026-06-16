@@ -14,5 +14,6 @@ namespace API.Interfaces
         public bool TipoMedidaExiste(Guid id);
         public bool UsuarioExiste(Guid id);
         public bool TipoItemExiste(Guid id);
+        public List<Item> ListarPorDoador(Guid usuarioId);
     }
 }

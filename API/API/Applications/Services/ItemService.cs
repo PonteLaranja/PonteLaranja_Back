@@ -52,6 +52,15 @@ namespace API.Applications.Services
             return itens;
         }
 
+        public List<LerItemDto> ListarPorUsuario(Guid usuarioId)
+        {
+            if (_repository.UsuarioExiste(usuarioId))
+            {
+                throw new DomainException("Usuario não encontrado.");
+            }
+            return _repository.ListarPorDoador(usuarioId).Select(i => ItemConversao.ConverterParaDto(i)).ToList();
+        }
+
         public void Adicionar(AdicionarItemDto criarItemDto)
         {
             if (criarItemDto == null)
