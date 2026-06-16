@@ -15,7 +15,10 @@ namespace API.Repositories
 
         public List<Usuario> Listar()
         {
-            return _context.Usuario.AsNoTracking().ToList();
+            return _context.Usuario
+                .AsNoTracking()
+                .Where(i => i.Ativo)
+                .ToList();
         }
 
         public Usuario ObterPorId(Guid id)

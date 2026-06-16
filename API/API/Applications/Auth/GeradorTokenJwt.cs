@@ -43,7 +43,9 @@ namespace API.Applications.Auth
 
                     new Claim(ClaimTypes.Name, usuario.Nome),
 
-                    new Claim(ClaimTypes.Email, usuario.Email)
+                    new Claim(ClaimTypes.Email, usuario.Email),
+
+                    new Claim(ClaimTypes.Role, usuario.TipoUsuario.NomeTipoUsuario)
                 };
 
                 var token = new JwtSecurityToken(

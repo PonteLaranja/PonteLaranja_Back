@@ -18,12 +18,14 @@ namespace API.Controllers
             _service = service;
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet]
         public ActionResult<List<LerUsuarioDto>> Listar()
         {
            return Ok(_service.Listar());
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet("{id}")]
         public ActionResult<LerUsuarioDto> ObterPorId(Guid id)
         {
@@ -38,6 +40,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet("email/{email}")]
         public ActionResult<LerUsuarioDto> ObterPorEmail(string email)
         {
@@ -52,7 +55,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public ActionResult Criar(CriarUsuarioDto dto)
         {
@@ -67,7 +70,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrador")]
         [HttpPut("{id}")]
         public ActionResult Atualizar(Guid id, CriarUsuarioDto dto)
         {
@@ -82,7 +85,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("{id}")]
         public ActionResult Inativar(Guid id)
         {

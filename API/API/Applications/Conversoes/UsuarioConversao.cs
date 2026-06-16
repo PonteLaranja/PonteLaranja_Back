@@ -1,4 +1,5 @@
-﻿using API.Domains;
+﻿using API.Applications.Auth;
+using API.Domains;
 using API.DTOs.UsuarioDto;
 
 namespace API.Applications.Conversoes
@@ -22,7 +23,7 @@ namespace API.Applications.Conversoes
                 Nome = usuario.Nome,
                 Email = usuario.Email,
                 TipoUsuarioID = usuario.TipoUsuarioID,
-                Senha = ConverterSenhaHash.HashSenha(usuario.Senha),
+                Senha = CriptografarUsuario.HashSenha(usuario.Senha),
             };
         }
     }

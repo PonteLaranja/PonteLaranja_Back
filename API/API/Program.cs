@@ -15,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 Env.Load();
 
+string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -47,7 +49,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlServer(connectionString));
 
 //TipoUsuario
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
@@ -133,16 +135,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
@@ -154,6 +146,14 @@ builder.Services.AddCors(options =>
         });
 });
 
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 
