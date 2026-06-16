@@ -15,6 +15,8 @@ public partial class Usuario
 
     public DateTime? DataCriacao { get; set; }
 
+    public bool Ativo { get; set; }
+
     public Guid TipoUsuarioID { get; set; }
 
     public virtual ICollection<Item> Item { get; set; } = new List<Item>();

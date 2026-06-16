@@ -134,16 +134,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("CorsPolicy",
-//        builder =>
-//        {
-//            builder.AllowAnyOrigin()
-//            .AllowAnyHeader()
-//            .AllowAnyMethod();
-//        });
-//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+        });
+});
 
 
 app.UseHttpsRedirection();
@@ -151,7 +151,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseCors("CorsPolicy");
+app.UseCors("CorsPolicy");
 
 app.MapControllers();
 
