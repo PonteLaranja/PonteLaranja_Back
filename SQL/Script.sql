@@ -22,6 +22,7 @@ CREATE TABLE Usuario(
     Email VARCHAR(150) UNIQUE,
     Senha VARBINARY(32),
     DataCriacao DATETIME2 DEFAULT SYSDATETIME(),
+    Ativo BIT DEFAULT 1 NOT NULL,
     TipoUsuarioID UNIQUEIDENTIFIER NOT NULL,
 
 CONSTRAINT Fk_TipoUsuario FOREIGN KEY (TipoUsuarioID)
@@ -39,6 +40,7 @@ CREATE TABLE Unidade(
     UnidadeID UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
     NomeUnidade VARCHAR(75) UNIQUE NOT NULL,
     CEP VARCHAR(10) NOT NULL,
+    Ativo BIT DEFAULT 1 NOT NULL,
     UsuarioResponsavelID UNIQUEIDENTIFIER NOT NULL,
     TipoUnidadeID UNIQUEIDENTIFIER NOT NULL,
 
@@ -68,6 +70,7 @@ CREATE TABLE Item(
     DataDoacao DATETIME2,
     Medida DECIMAL (6,3) NOT NULL,
     Quantidade INT NOT NULL,
+    Ativo BIT DEFAULT 1 NOT NULL,
     TipoItemID UNIQUEIDENTIFIER,
     TipoMedidaID UNIQUEIDENTIFIER,
     UsuarioID UNIQUEIDENTIFIER,
@@ -92,7 +95,7 @@ GO
 
 CREATE TABLE Transferencia(
     TransferenciaID UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
-    DataEnvio DATETIME2,
+    DataEnvio DATETIME2 DEFAULT SYSDATETIME(),
     DataChegada DATETIME2,
     UnidadeOrigemID UNIQUEIDENTIFIER NOT NULL,
     UnidadeDestinoID UNIQUEIDENTIFIER NOT NULL,
@@ -112,24 +115,48 @@ GO
 /* =====================================================
    TRIGGER
    ===================================================== */
-CREATE TRIGGER trg_Aprovacao_Item
-ON Transferencia
-AFTER Update 
+/* =====================================================
+   TRIGGER SOFT DELETE: USUARIO
+   ===================================================== */
+CREATE TRIGGER trg_SoftDelete_Usuario
+ON Usuario
+INSTEAD OF DELETE
 AS BEGIN
-    SET NOCOUNT ON
-        UPDATE t
-        SET DataChegada = GETDATE()
-        FROM Transferencia t
-        INNER JOIN inserted i
-        ON t.TransferenciaID = i.TransferenciaID
-        INNER JOIN deleted d
-        ON d.TransferenciaID = i.TransferenciaID
-        INNER JOIN TipoEstadoTransferencia novo
-        ON i.TipoEstadoTransferenciaID = novo.TipoEstadoTransferenciaID
-        INNER JOIN TipoEstadoTransferencia antigo
-        ON d.TipoEstadoTransferenciaID = antigo.TipoEstadoTransferenciaID
-        WHERE novo.EstadoTransferencia = 'Aprovado'
-        AND antigo.EstadoTransferencia <> 'Aprovado';
+    SET NOCOUNT ON;
+    
+    UPDATE Usuario
+    SET Ativo = 0
+    WHERE UsuarioID IN (SELECT UsuarioID FROM deleted);
+END
+GO
+
+/* =====================================================
+   TRIGGER SOFT DELETE: UNIDADE
+   ===================================================== */
+CREATE TRIGGER trg_SoftDelete_Unidade
+ON Unidade
+INSTEAD OF DELETE
+AS BEGIN
+    SET NOCOUNT ON;
+    
+    UPDATE Unidade
+    SET Ativo = 0
+    WHERE UnidadeID IN (SELECT UnidadeID FROM deleted);
+END
+GO
+
+/* =====================================================
+   TRIGGER SOFT DELETE: ITEM
+   ===================================================== */
+CREATE TRIGGER trg_SoftDelete_Item
+ON Item
+INSTEAD OF DELETE
+AS BEGIN
+    SET NOCOUNT ON;
+    
+    UPDATE Item
+    SET Ativo = 0
+    WHERE ItemID IN (SELECT ItemID FROM deleted);
 END
 GO
 
@@ -140,7 +167,7 @@ GO
 INSERT INTO TipoUsuario (NomeTipoUsuario) VALUES ('Administrador'), ('Responsavel'), ('Doador');
 GO
 
-INSERT INTO EstadoTransferencia (EstadoTransNome) VALUES ('Em andamento'), ('Aprovado'), ('Reprovado'), ('Cancelado'), ('Recebido');
+INSERT INTO EstadoTransferencia (EstadoTransNome) VALUES ('Pendente'), ('Aprovado'), ('Reprovado'), ('Cancelado'), ('Recebido');
 GO
 
 INSERT INTO TipoUnidade (NomeTipoUnidade) VALUES ('Coleta'), ('Distribuicao');
@@ -244,7 +271,7 @@ VALUES
     NULL,
     (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
     (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Unidade Leste'),
-    (SELECT EstadoTransID FROM EstadoTransferencia WHERE EstadoTransNome = 'Em andamento'),
+    (SELECT EstadoTransID FROM EstadoTransferencia WHERE EstadoTransNome = 'Pendente'),
     (SELECT ItemID FROM Item WHERE NomeItem = 'Camiseta Infantil')
 );
 GO
