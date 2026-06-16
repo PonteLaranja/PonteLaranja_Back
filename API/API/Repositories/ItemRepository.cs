@@ -56,6 +56,27 @@ namespace API.Repositories
             _context.Item.Remove(_context.Item.Find(id));
             _context.SaveChanges();
         }
+
+        public bool UnidadeExiste(Guid id)
+        {
+            return _context.Unidade.Any(u => u.UnidadeID == id);
+        }
+
+        public bool TipoItemExiste(Guid id)
+        {
+            return _context.TipoItem.Any(u => u.TipoItemID == id);
+        }
+
+        public bool UsuarioExiste(Guid id)
+        {
+            return _context.Usuario.Any(u => u.UsuarioID == id);
+        }
+
+        public bool TipoMedidaExiste(Guid id)
+        {
+            return _context.TipoMedida.Any(u => u.TipoMedidaID == id);
+        }
+
         public void Atualizar(Item item)
         {
             if(item == null || !_context.Item.Any(i => i.ItemID == item.ItemID))
