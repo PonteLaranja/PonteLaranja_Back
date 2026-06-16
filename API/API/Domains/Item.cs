@@ -17,6 +17,8 @@ public partial class Item
 
     public int Quantidade { get; set; }
 
+    public bool Ativo { get; set; }
+
     public Guid? TipoItemID { get; set; }
 
     public Guid? TipoMedidaID { get; set; }

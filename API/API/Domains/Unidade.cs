@@ -11,6 +11,8 @@ public partial class Unidade
 
     public string CEP { get; set; } = null!;
 
+    public bool Ativo { get; set; }
+
     public Guid UsuarioResponsavelID { get; set; }
 
     public Guid TipoUnidadeID { get; set; }
