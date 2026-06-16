@@ -2,9 +2,9 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace API.Applications.Conversoes
+namespace API.Applications.Auth
 {
-    public class ConverterSenhaHash
+    public class CriptografarUsuario
     {
         public static byte[] HashSenha(string senha)
         {

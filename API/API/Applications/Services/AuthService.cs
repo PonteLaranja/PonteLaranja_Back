@@ -3,7 +3,6 @@ using API.Domains;
 using API.DTOs.AuthDto;
 using API.Interfaces;
 using API.Exceptions;
-using API.Applications.Conversoes;
 
 namespace API.Applications.Services
 {
@@ -35,7 +34,7 @@ namespace API.Applications.Services
                 throw new DomainException("Usuário invalido");
 
             Console.WriteLine(usuario.Senha);
-            if (!ConverterSenhaHash.HashSenha(loginDto.senha).SequenceEqual(usuario.Senha))
+            if (!CriptografarUsuario.HashSenha(loginDto.senha).SequenceEqual(usuario.Senha))
                 throw new DomainException("Senha invalida");
             
             var token = _tokenJwt.GerarToken(usuario);

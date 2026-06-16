@@ -15,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 Env.Load();
 
+string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -47,32 +49,41 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<PonteLaranjaDbContext>(options => options.UseSqlServer(connectionString));
 
+//TipoUsuario
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
 builder.Services.AddScoped<TipoUsuarioService>();
 
+//Usuario
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
 
+//Unidade
 builder.Services.AddScoped<IUnidadeRepository, UnidadeRepository>();
 builder.Services.AddScoped<UnidadeService>();
 
+//TipoMedida
 builder.Services.AddScoped<ITipoMedidaRepository, TipoMedidaRepository>();
 builder.Services.AddScoped<TipoMedidaService>();
 
+//TipoItem
 builder.Services.AddScoped<ITipoItemRepository, TipoItemRepository>();
 builder.Services.AddScoped<TipoItemService>();
 
+//Item
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ItemService>();
 
+//EstadoTransferencia
 builder.Services.AddScoped<IEstadoTransferenciaRepository, EstadoTransferenciaRepository>();
 builder.Services.AddScoped<EstadoTransferenciaService>();
 
+//Transferencia
 builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepository>();
 builder.Services.AddScoped<TransferenciaService>();
 
+// Autentificação e JWT
 builder.Services.AddScoped<GeradorTokenJwt>();
 builder.Services.AddScoped<AuthService>();
 
@@ -124,16 +135,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
@@ -145,6 +146,14 @@ builder.Services.AddCors(options =>
         });
 });
 
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 

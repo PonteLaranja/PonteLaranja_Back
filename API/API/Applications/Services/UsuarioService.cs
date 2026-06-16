@@ -97,5 +97,15 @@ namespace API.Applications.Services
 
             _repositoryUsuario.Atualizar(id, usuarioExistente);
         }
+
+        public void Inativar(Guid id)
+        {
+            if (!_repositoryUsuario.UsuarioExiste(id))
+            {
+                throw new DomainException("Usuario não encontrado.");
+            }
+
+            _repositoryUsuario.Deletar(id);
+        }
     }
 }

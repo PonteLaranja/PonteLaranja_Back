@@ -1,6 +1,7 @@
 ﻿using API.Applications.Services;
 using API.DTOs.UsuarioDto;
 using API.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,6 +52,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Criar(CriarUsuarioDto dto)
         {
@@ -65,6 +67,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public ActionResult Atualizar(Guid id, CriarUsuarioDto dto)
         {
@@ -74,6 +77,20 @@ namespace API.Controllers
                 return NoContent();
             }
             catch (DomainException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public ActionResult Inativar(Guid id)
+        {
+            try
+            {
+                _service.Inativar(id);
+                return NoContent();
+            } catch(DomainException ex)
             {
                 return NotFound(ex.Message);
             }

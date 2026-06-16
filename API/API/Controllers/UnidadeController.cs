@@ -1,6 +1,7 @@
 ﻿using API.Applications.Services;
 using API.DTOs.UnidadeDto;
 using API.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +40,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Cadastrar(CadastrarUnidadeDto criarDto)
         {
@@ -53,6 +55,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut]
         public ActionResult Atualizar(Guid id, CadastrarUnidadeDto atualizarDto)
         {
@@ -67,6 +70,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete]
         public ActionResult Inativar(Guid id)
         {
