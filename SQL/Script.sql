@@ -1,4 +1,8 @@
+USE master
+GO
 
+DROP DATABASE PonteLaranjaDb
+GO
 
 CREATE DATABASE PonteLaranjaDb
 GO
