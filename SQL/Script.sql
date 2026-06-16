@@ -173,7 +173,7 @@ GO
 INSERT INTO TipoUnidade (NomeTipoUnidade) VALUES ('Coleta'), ('Distribuicao');
 GO
 
-INSERT INTO TipoMedida (NomeTipoMedida) VALUES ('Kg'), ('Nulo'), ('Litro'), ('Tamanho');
+INSERT INTO TipoMedida (NomeTipoMedida) VALUES ('Kg'), ('Nulo'), ('Litro'), ('PP'), ('P'), ('M'), ('G'), ('GG');
 GO
 
 
