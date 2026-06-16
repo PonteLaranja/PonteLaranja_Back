@@ -10,6 +10,9 @@ namespace API.Interfaces
         public void Adicionar(Item item);
         public void Deletar(Guid id);
         public void Atualizar( Item item);
-
+        public bool UnidadeExiste(Guid id);
+        public bool TipoMedidaExiste(Guid id);
+        public bool UsuarioExiste(Guid id);
+        public bool TipoItemExiste(Guid id);
     }
 }

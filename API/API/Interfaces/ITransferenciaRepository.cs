@@ -1,6 +1,7 @@
 ﻿namespace API.Interfaces
 {
-    public class ITransferenciaRepository
+    public interface ITransferenciaRepository
     {
+
     }
 }

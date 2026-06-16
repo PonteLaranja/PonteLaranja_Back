@@ -7,38 +7,29 @@ namespace API.Applications.Services
 {
     public class ItemService
     {
-        private readonly IItemRepository _itemRepository;
-        private readonly ITipoItemRepository _tipoItemRepository;
-        private readonly ITipoMedidaRepository _tipoMedidaRepository;
-        private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IUnidadeRepository _unidadeRepository;
-        public ItemService(IItemRepository itemRepository, ITipoItemRepository tipoItemRepository, ITipoMedidaRepository tipoMedidaRepository, IUsuarioRepository usuarioRepository, IUnidadeRepository unidadeRepository)
-        {
-            _itemRepository = itemRepository;
-            _tipoItemRepository = tipoItemRepository;
-            _tipoMedidaRepository = tipoMedidaRepository;
-            _usuarioRepository = usuarioRepository;
-            _unidadeRepository = unidadeRepository;
+        private readonly IItemRepository _repository;
+        public ItemService(IItemRepository repository) { 
+            _repository = repository;
         }
 
         private bool ValidarIds(Guid? idTipoItem, Guid? medidaId, Guid? usuarioId, Guid? unidadeId)
         {
-            if (idTipoItem == null && !_tipoItemRepository.TipoItemExiste(idTipoItem.Value))
+            if (idTipoItem == null && !_repository.TipoItemExiste(idTipoItem.Value))
             {
                 throw new DomainException("Tipo de item não encontrado.");
             }
 
-            if(medidaId == null && !_tipoMedidaRepository.TipoMedidaExiste(medidaId.Value))
+            if(medidaId == null && !_repository.TipoMedidaExiste(medidaId.Value))
             {
                 throw new DomainException("Tipo de medida não encontrado.");
             }
 
-            if (usuarioId == null && !_usuarioRepository.UsuarioExiste(usuarioId.Value))
+            if (usuarioId == null && !_repository.UsuarioExiste(usuarioId.Value))
             {
                 throw new DomainException("Usuário não encontrado.");
             }
 
-            if (unidadeId == null && !_unidadeRepository.UnidadeExiste(unidadeId.Value))
+            if (unidadeId == null && !_repository.UnidadeExiste(unidadeId.Value))
             {
                 throw new DomainException("Unidade não encontrada.");
             }
@@ -46,12 +37,12 @@ namespace API.Applications.Services
         }
         public List<LerItemDto> Listar()
         {
-            return _itemRepository.Listar().Select(i => ItemConversao.ConverterParaDto(i)).ToList();
+            return _repository.Listar().Select(i => ItemConversao.ConverterParaDto(i)).ToList();
         }
 
         public List<LerItemDto> ListarPorTipo(Guid idTipo)
         {
-            List<LerItemDto> itens = _itemRepository.ListarPorTipo(idTipo).Select(i => ItemConversao.ConverterParaDto(i)).ToList();
+            List<LerItemDto> itens = _repository.ListarPorTipo(idTipo).Select(i => ItemConversao.ConverterParaDto(i)).ToList();
 
             if (itens == null || itens.Count == 0)
             {
@@ -70,12 +61,12 @@ namespace API.Applications.Services
 
             ValidarIds(criarItemDto.TipoItemID, criarItemDto.TipoMedidaID, criarItemDto.UsuarioID, criarItemDto.UnidadeID);
 
-            _itemRepository.Adicionar(ItemConversao.ConverterParaDominioAdcionar(criarItemDto));
+            _repository.Adicionar(ItemConversao.ConverterParaDominioAdcionar(criarItemDto));
         }
 
         public void Atualizar(Guid id, AtualizarItemDto atualizarItemDto)
         {
-            var itemBanco = _itemRepository.ObterPorId(id);
+            var itemBanco = _repository.ObterPorId(id);
 
             if (itemBanco == null)
             {
@@ -115,18 +106,18 @@ namespace API.Applications.Services
 
             if (atualizarItemDto.UnidadeID != null)
                 itemBanco.UnidadeID = atualizarItemDto.UnidadeID;
-           
-            _itemRepository.Atualizar(itemBanco);
+
+            _repository.Atualizar(itemBanco);
         }
 
         public void Deletar(Guid id)
         {
-            var itemBanco = _itemRepository.ObterPorId(id);
+            var itemBanco = _repository.ObterPorId(id);
             if (itemBanco == null)
             {
                 throw new DomainException("O item a ser deletado não existe.");
             }
-            _itemRepository.Deletar(id);
+            _repository.Deletar(id);
         }
     }
 }
