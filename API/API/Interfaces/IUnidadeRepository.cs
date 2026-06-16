@@ -21,5 +21,11 @@ namespace API.Interfaces
         void Atualizar(Unidade unidadeAtualizada, Guid responsavelId, Guid tipoUnidadeId);
 
         void Inativar(Guid unidadeId);
+
+        // Retorna a quantidade total de itens ativos filtrados por tipo e, opcionalmente, por tamanho (ex: Roupas).
+        int ObterEstoqueAtualPorTipoItem(Guid unidadeId, Guid tipoItemId, string? tamanho = null);
+
+        // Retorna o total de baixas sazonais filtradas por tipo, mês e, opcionalmente, por tamanho.
+        int ObterTotalBaixasSazonais(Guid unidadeId, Guid tipoItemId, int mes, string? tamanho = null);
     }
 }
