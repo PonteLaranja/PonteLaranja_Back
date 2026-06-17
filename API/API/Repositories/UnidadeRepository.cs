@@ -22,12 +22,16 @@ namespace API.Repositories
                 .Where(u => u.Ativo)
                 .OrderBy(Unidade => Unidade.NomeUnidade)
                 .AsNoTracking()
+                .Include(u => u.UsuarioResponsavel)
+                .Include(u => u.TipoUnidade)
                 .ToList();
         }
 
         public Unidade BuscarPorGuid(Guid id)
         {
             return _context.Unidade
+                .Include(u => u.UsuarioResponsavel)
+                .Include(u => u.TipoUnidade)
                 .AsNoTracking()
                 .FirstOrDefault(u => u.UnidadeID == id && u.Ativo);
         }
@@ -41,6 +45,8 @@ namespace API.Repositories
         public Unidade BuscarPorCEP(string cep)
         {
             return _context.Unidade
+                .Include(u => u.UsuarioResponsavel)
+                .Include(u => u.TipoUnidade)
                 .AsNoTracking()
                 .FirstOrDefault(u => u.CEP == cep && u.Ativo);
         }
@@ -48,6 +54,8 @@ namespace API.Repositories
         public Unidade BuscarPorNome(string nomeUnidade)
         {
             return _context.Unidade
+                .Include(u => u.UsuarioResponsavel)
+                .Include(u => u.TipoUnidade)
                 .AsNoTracking()
                 .FirstOrDefault(u => u.NomeUnidade.ToLower() == nomeUnidade.ToLower() && u.Ativo);
         }

@@ -13,7 +13,10 @@ namespace API.Applications.Conversoes
                 NomeUnidadeDto = unidade.NomeUnidade,
                 CEPDto = unidade.CEP,
                 UsuarioResponsavelDto = unidade.UsuarioResponsavelID,
-                TipoUnidadeDto = unidade.TipoUnidadeID
+                NomeResponsavelDto = unidade.UsuarioResponsavel.Nome,
+                TipoUnidadeDto = unidade.TipoUnidadeID,
+                NomeTipoUnidadeDto = unidade.TipoUnidade.NomeTipoUnidade,
+                Ativo = unidade.Ativo,
             };
         }
 
