@@ -4,6 +4,7 @@ using API.Domains;
 using API.DTOs.UnidadeDto;
 using API.Exceptions;
 using API.Interfaces;
+using API.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.Xml;
 
@@ -149,60 +150,52 @@ namespace API.Applications.Services
                 throw new DomainException("Preencha os campos da consulta.");
             }
 
-            // Puxa todas as unidades ativas através do repositório existente
-            List<Unidade> unidades = _repository.Listar();
+            // 1. Puxa todas as unidades ativas mapeadas no banco
+            var unidades = _repository.Listar();
 
-            // Validação estrita para identificar se é Roupa com base nos tamanhos reais do banco
-            var tamanhosValidos = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "PP", "P", "M", "G", "GG" };
-            bool ehRoupa = !string.IsNullOrEmpty(consultaDto.Tamanho) && tamanhosValidos.Contains(consultaDto.Tamanho);
+            // 2. Busca o nome real do TipoItem dinamicamente
+            string nomeTipoItem = _repository.ObterNomeTipoItemPorId(consultaDto.TipoItemID) ?? "Item";
 
-            string nomeTipoItem = ehRoupa ? "Roupa" : "Item";
-            string tamanhoFiltro = ehRoupa ? consultaDto.Tamanho.ToUpper() : null;
-            string unidadeMedidaPadrao = ehRoupa ? $"Peças ({tamanhoFiltro})" : "Unidades";
+            // 3. Define dinamicamente a unidade de medida com base no tipo real e tamanho
+            string unidadeMedidaPadrao = DefinirUnidadeMedida(nomeTipoItem, consultaDto.Tamanho);
+            string? tamanhoFiltro = !string.IsNullOrEmpty(consultaDto.Tamanho) ? consultaDto.Tamanho.ToUpper() : null;
 
             var listaRank = new List<RankPrioridadeDto>();
-            int mesAtual = DateTime.Today.Month;
+
+            // Variáveis temporais para o cálculo preciso do mês vigente
+            DateTime hoje = DateTime.Today;
+            int mesAtual = hoje.Month;
+            int diaAtual = hoje.Day; // Quantos dias se passaram no mês atual
 
             foreach (var unidade in unidades)
             {
-                // Busca o estoque total passando o filtro tratado (ou null para não-roupas)
+                // Busca estoque (com o cálculo de Kg/Litro corrigido no Repository)
                 int estoque = _repository.ObterEstoqueAtualPorTipoItem(unidade.UnidadeID, consultaDto.TipoItemID, tamanhoFiltro);
 
-                // Busca o total de baixas ocorridas neste mesmo mês
+                // Busca o total de baixas (doações reais) efetuadas neste mês
                 int totalBaixas = _repository.ObterTotalBaixasSazonais(unidade.UnidadeID, consultaDto.TipoItemID, mesAtual, tamanhoFiltro);
 
-                double mediaDiaria = 0.0;
+                // Média diária real baseada nos dias decorridos do mês atual para manter a proporção correta
+                double mediaDiaria = totalBaixas > 0 ? (double)totalBaixas / diaAtual : 0.0;
 
-                if (totalBaixas > 0)
-                {
-                    // TRATAMENTO DE DADOS: Descobre a idade do sistema para ponderar a média pelos anos corretos
-                    int anoAtual = DateTime.Today.Year;
-                    int anoInicialDoSistema = 2024; // Ano em que o sistema começou a funcionar
-
-                    // Calcula quantos anos o sistema possui de histórico (Garante no mínimo 1 para evitar divisão por zero)
-                    int quantidadeAnosHistoricos = (anoAtual - anoInicialDoSistema) + 1;
-
-                    // O divisor comercial reflete os 30 dias multiplicados pelo número de anos acumulados no banco
-                    int totalDiasHistoricosConsiderados = quantidadeAnosHistoricos * 30;
-
-                    // Média diária real baseada em todo o histórico do mês através dos anos
-                    mediaDiaria = (double)totalBaixas / totalDiasHistoricosConsiderados;
-                }
-
-                // Calcula os dias restantes de estoque
+                // Calcula os dias restantes de estoque tratando o colapso (estoque zero)
                 int diasRestantes;
-                if (mediaDiaria == 0)
+                if (estoque == 0)
                 {
-                    diasRestantes = estoque == 0 ? 0 : 999;
+                    diasRestantes = 0; // Se não tem nada, a cobertura é imediata (zero dias)
+                }
+                else if (mediaDiaria == 0)
+                {
+                    diasRestantes = 999; // Tem estoque mas não há consumo registrado: estável
                 }
                 else
                 {
                     diasRestantes = (int)Math.Ceiling(estoque / mediaDiaria);
                 }
 
-                // Define o nível de urgência baseado nos dias de cobertura
+                // Define o nível de urgência
                 string urgencia = "Estável";
-                if (diasRestantes <= 7) urgencia = "Crítica";
+                if (estoque == 0 || diasRestantes <= 7) urgencia = "Crítica";
                 else if (diasRestantes <= 15) urgencia = "Atenção";
 
                 listaRank.Add(new RankPrioridadeDto
@@ -210,28 +203,41 @@ namespace API.Applications.Services
                     UnidadeId = unidade.UnidadeID,
                     NomeUnidade = unidade.NomeUnidade,
                     CEP = unidade.CEP,
+                    TipoItemConsultado = nomeTipoItem,
                     TamanhoConsultado = tamanhoFiltro,
+                    UnidadeMedida = unidadeMedidaPadrao,
                     EstoqueAtual = estoque,
                     MediaConsumoDiarioMesAtual = Math.Round(mediaDiaria, 3),
                     DiasRestantesDeEstoque = diasRestantes,
-                    NivelUrgencia = urgencia,
-                    TipoItemConsultado = nomeTipoItem,
-                    UnidadeMedida = unidadeMedidaPadrao
+                    NivelUrgencia = urgencia
                 });
             }
 
-            // Ordena o Rank por menor tempo de estoque restante
+            // ORDENAÇÃO INTELIGENTE:
+            // Primeiro: Critica > Atencao > Estavel
+            // Segundo (Desempate): Menor quantidade de dias restantes de estoque vai para o topo
             var rankingOrdenado = listaRank
-                .OrderBy(r => r.DiasRestantesDeEstoque)
+                .OrderBy(r => r.NivelUrgencia == "Crítica" ? 1 : r.NivelUrgencia == "Atenção" ? 2 : 3)
+                .ThenBy(r => r.DiasRestantesDeEstoque)
                 .ToList();
 
-            // Atribui as posições sequenciais do ranking ordenado
+            // Atribui as posições sequenciais no topo do ranking ordenado (1, 2, 3...)
             for (int i = 0; i < rankingOrdenado.Count; i++)
             {
                 rankingOrdenado[i].PosicaoRankingPrioridade = i + 1;
             }
 
             return rankingOrdenado;
+        }
+
+        private string DefinirUnidadeMedida(string tipoItem, string? tamanho)
+        {
+            if (tipoItem.Equals("Alimento", StringComparison.OrdinalIgnoreCase)) return "Kg";
+            if (tipoItem.Equals("Bebida", StringComparison.OrdinalIgnoreCase)) return "Litros";
+            if (tipoItem.Equals("Roupa", StringComparison.OrdinalIgnoreCase))
+                return string.IsNullOrEmpty(tamanho) ? "Peças" : $"Peças ({tamanho.ToUpper()})";
+
+            return "Unidades"; // Para brinquedos ou genéricos
         }
     }
 }
