@@ -1,7 +1,11 @@
 USE master
 GO
 
-DROP DATABASE PonteLaranjaDb
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'PonteLaranjaDb')
+BEGIN
+    ALTER DATABASE PonteLaranjaDb SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE PonteLaranjaDb;
+END
 GO
 
 CREATE DATABASE PonteLaranjaDb
@@ -19,7 +23,7 @@ GO
 CREATE TABLE Usuario(
     UsuarioID UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
     Nome VARCHAR(50) NOT NULL,
-    Email VARCHAR(150) UNIQUE,
+    Email VARCHAR(150),
     Senha VARBINARY(32),
     DataCriacao DATETIME2 DEFAULT SYSDATETIME(),
     Ativo BIT DEFAULT 1 NOT NULL,
@@ -28,6 +32,11 @@ CREATE TABLE Usuario(
 CONSTRAINT Fk_TipoUsuario FOREIGN KEY (TipoUsuarioID)
     REFERENCES TipoUsuario(TipoUsuarioID)
 )
+GO
+
+    CREATE UNIQUE NONCLUSTERED INDEX UQ_Usuario_Email_NaoNulo
+ON Usuario(Email)
+WHERE Email IS NOT NULL;
 GO
 
 CREATE TABLE TipoUnidade(
@@ -186,11 +195,11 @@ SELECT * FROM TipoUnidade
 SELECT * FROM TipoUsuario
 
 /* =====================================================
-   INSERCAO DE DADOS PARA TESTE
+   INSERCAO DE DADOS PARA DEMONSTRAÇÃO
    ===================================================== */
 
 /* =====================================================
-   INSERCAO DE USUARIOS
+   INSERÇÃO DE USUÁRIOS
    ===================================================== */
 INSERT INTO Usuario (Nome, Email, Senha, TipoUsuarioID)
 VALUES
@@ -198,32 +207,26 @@ VALUES
 ('Maria Silva', 'maria@pontelaranja.org', HASHBYTES('MD5','123456'), (SELECT TipoUsuarioID FROM TipoUsuario WHERE NomeTipoUsuario = 'Responsavel')),
 ('Joao Pereira', 'joao@pontelaranja.org', HASHBYTES('MD5','123456'), (SELECT TipoUsuarioID FROM TipoUsuario WHERE NomeTipoUsuario = 'Responsavel')),
 ('Ana Souza', 'ana@email.com', HASHBYTES('MD5','123456'), (SELECT TipoUsuarioID FROM TipoUsuario WHERE NomeTipoUsuario = 'Doador')),
-('Carlos Lima', 'carlos@email.com', HASHBYTES('MD5','123456'), (SELECT TipoUsuarioID FROM TipoUsuario WHERE NomeTipoUsuario = 'Doador'));
+('Carlos Lima', 'carlos@email.com', HASHBYTES('MD5','123456'), (SELECT TipoUsuarioID FROM TipoUsuario WHERE NomeTipoUsuario = 'Doador')),
+('Marcos do Amaral Viana', NULL, NULL, (SELECT TipoUsuarioID FROM TipoUsuario WHERE NomeTipoUsuario = 'Doador')),
+('Fernanda Santos Souza', NULL, NULL, (SELECT TipoUsuarioID FROM TipoUsuario WHERE NomeTipoUsuario = 'Doador'));
 GO
 
 /* =====================================================
-   INSERCAO DE UNIDADES
+   INSERÇÃO DE UNIDADES
    ===================================================== */
-
 INSERT INTO Unidade (NomeUnidade, CEP, UsuarioResponsavelID, TipoUnidadeID)
 VALUES
 ('Matriz Centro', '09000-000', (SELECT UsuarioID FROM Usuario WHERE Email = 'maria@pontelaranja.org'), (SELECT TipoUnidadeID FROM TipoUnidade WHERE NomeTipoUnidade = 'Coleta')),
-('Unidade Leste', '09100-000', (SELECT UsuarioID FROM Usuario WHERE Email = 'joao@pontelaranja.org'), (SELECT TipoUnidadeID FROM TipoUnidade WHERE NomeTipoUnidade = 'Distribuicao'));
+('Unidade Leste', '09100-000', (SELECT UsuarioID FROM Usuario WHERE Email = 'joao@pontelaranja.org'), (SELECT TipoUnidadeID FROM TipoUnidade WHERE NomeTipoUnidade = 'Distribuicao')),
+('Unidade ABC', '09200-000', (SELECT UsuarioID FROM Usuario WHERE Email = 'joao@pontelaranja.org'), (SELECT TipoUnidadeID FROM TipoUnidade WHERE NomeTipoUnidade = 'Distribuicao')),
+('Unidade Zona Sul', '04000-000', (SELECT UsuarioID FROM Usuario WHERE Email = 'maria@pontelaranja.org'), (SELECT TipoUnidadeID FROM TipoUnidade WHERE NomeTipoUnidade = 'Coleta'));
 GO
 
 /* =====================================================
-   INSERCAO DE ITENS 
+   INSERÇÃO DE ITENS 
    ===================================================== */
-INSERT INTO Item (
-    NomeItem,
-    DataRecebimento,
-    Medida,
-    Quantidade,
-    TipoMedidaID,
-    UnidadeID,
-    UsuarioID,
-    TipoItemID
-)
+INSERT INTO Item (NomeItem, DataRecebimento, Medida, Quantidade, TipoMedidaID, UnidadeID, UsuarioID, TipoItemID)
 VALUES
 (
     'Arroz 5kg',
@@ -240,7 +243,7 @@ VALUES
     GETDATE(),
     1,
     80,
-    (SELECT TipoMedidaID FROM TipoMedida WHERE NomeTipoMedida = 'Kg'),
+    (SELECT TipoMedidaID FROM TipoMedida WHERE NomeTipoMedida = 'P'),
     (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
     (SELECT UsuarioID FROM Usuario WHERE Email = 'maria@pontelaranja.org'),
     (SELECT TipoItemID FROM TipoItem WHERE NomeTipoItem = 'Roupa')
@@ -254,11 +257,41 @@ VALUES
     (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
     (SELECT UsuarioID FROM Usuario WHERE Email = 'maria@pontelaranja.org'),
     (SELECT TipoItemID FROM TipoItem WHERE NomeTipoItem = 'Brinquedo')
+),
+(
+    'Agasalho de Frio Moletom',
+    DATEADD(DAY,-5,GETDATE()),
+    1.0,
+    15,
+    (SELECT TipoMedidaID FROM TipoMedida WHERE NomeTipoMedida = 'M'),
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
+    (SELECT UsuarioID FROM Usuario WHERE Nome = 'Marcos do Amaral Viana'),
+    (SELECT TipoItemID FROM TipoItem WHERE NomeTipoItem = 'Roupa')
+),
+(
+    'Calça Jeans Masculina',
+    DATEADD(DAY,-4,GETDATE()),
+    1.0,
+    22,
+    (SELECT TipoMedidaID FROM TipoMedida WHERE NomeTipoMedida = 'G'),
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Unidade Zona Sul'),
+    (SELECT UsuarioID FROM Usuario WHERE Nome = 'Fernanda Santos Souza'),
+    (SELECT TipoItemID FROM TipoItem WHERE NomeTipoItem = 'Roupa')
+),
+(
+    'Suco de Uva Integral 1L',
+    DATEADD(DAY,-2,GETDATE()),
+    1.0,
+    50,
+    (SELECT TipoMedidaID FROM TipoMedida WHERE NomeTipoMedida = 'Litro'),
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
+    (SELECT UsuarioID FROM Usuario WHERE Nome = 'Marcos do Amaral Viana'),
+    (SELECT TipoItemID FROM TipoItem WHERE NomeTipoItem = 'Bebida')
 );
 GO
 
 /* =====================================================
-   INSERCAO DE TRANSFERENCIAS
+   INSERÇÃO DE TRANSFERÊNCIAS
    ===================================================== */
 INSERT INTO Transferencia (DataEnvio, DataChegada, UnidadeOrigemID, UnidadeDestinoID, EstadoTransferenciaID, ItemID)
 VALUES
@@ -268,7 +301,7 @@ VALUES
     (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
     (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Unidade Leste'),
     (SELECT EstadoTransID FROM EstadoTransferencia WHERE EstadoTransNome = 'Recebido'),
-    (SELECT ItemID FROM Item WHERE NomeItem = 'Arroz 5kg')
+    (SELECT ItemID FROM Item WHERE NomeItem = 'Arroz 5kg' AND UsuarioID = (SELECT UsuarioID FROM Usuario WHERE Email = 'maria@pontelaranja.org'))
 ),
 (
     GETDATE(),
@@ -276,19 +309,35 @@ VALUES
     (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
     (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Unidade Leste'),
     (SELECT EstadoTransID FROM EstadoTransferencia WHERE EstadoTransNome = 'Pendente'),
-    (SELECT ItemID FROM Item WHERE NomeItem = 'Camiseta Infantil')
+    (SELECT ItemID FROM Item WHERE NomeItem = 'Camiseta Infantil' AND UsuarioID = (SELECT UsuarioID FROM Usuario WHERE Email = 'maria@pontelaranja.org'))
+),
+(
+    DATEADD(DAY,-5,GETDATE()),
+    DATEADD(DAY,-5,GETDATE()),
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
+    (SELECT EstadoTransID FROM EstadoTransferencia WHERE EstadoTransNome = 'Recebido'),
+    (SELECT ItemID FROM Item WHERE NomeItem = 'Agasalho de Frio Moletom' AND UsuarioID = (SELECT UsuarioID FROM Usuario WHERE Nome = 'Marcos do Amaral Viana'))
+),
+(
+    DATEADD(DAY,-4,GETDATE()),
+    DATEADD(DAY,-4,GETDATE()),
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Unidade Zona Sul'),
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Unidade Zona Sul'),
+    (SELECT EstadoTransID FROM EstadoTransferencia WHERE EstadoTransNome = 'Recebido'),
+    (SELECT ItemID FROM Item WHERE NomeItem = 'Calça Jeans Masculina' AND UsuarioID = (SELECT UsuarioID FROM Usuario WHERE Nome = 'Fernanda Santos Souza'))
+),
+(
+    DATEADD(DAY,-1,GETDATE()),
+    NULL,
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Matriz Centro'),
+    (SELECT UnidadeID FROM Unidade WHERE NomeUnidade = 'Unidade ABC'),
+    (SELECT EstadoTransID FROM EstadoTransferencia WHERE EstadoTransNome = 'Pendente'),
+    (SELECT ItemID FROM Item WHERE NomeItem = 'Arroz 5kg' AND UsuarioID = (SELECT UsuarioID FROM Usuario WHERE Email = 'maria@pontelaranja.org'))
 );
 GO
 
 /* =====================================================
-   CONFERENCIA DE DADOS
+   CONFERÊNCIA DE DADOS FINAL
    ===================================================== */
-PRINT '--- TipoUsuario ---'; SELECT * FROM TipoUsuario;
-PRINT '--- EstadoTransferencia ---'; SELECT * FROM EstadoTransferencia;
-PRINT '--- TipoUnidade ---'; SELECT * FROM TipoUnidade;
-PRINT '--- TipoMedida ---'; SELECT * FROM TipoMedida;
-PRINT '--- TipoItem ---'; SELECT * FROM TipoItem;
-PRINT '--- Usuario ---'; SELECT * FROM Usuario;
-PRINT '--- Unidade ---'; SELECT * FROM Unidade;
-PRINT '--- Item ---'; SELECT * FROM Item;
-PRINT '--- Transferencia ---'; SELECT * FROM Transferencia;
+PRINT '--- Carga Completa Executada com Sucesso! ---';

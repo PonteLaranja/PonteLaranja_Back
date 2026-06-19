@@ -27,7 +27,7 @@ namespace API.Applications.Services
         public LerTransferenciaDto ObterPorID(Guid id)
         {
             var transferencia = _repository.ObterPorId(id);
-            if(transferencia == null)
+            if (transferencia == null)
             {
                 throw new DomainException("Transferencia não encontrada");
             }
@@ -35,11 +35,37 @@ namespace API.Applications.Services
             return TransferenciaConversao.ConverterParaDto(transferencia);
         }
 
+        public List<LogDoacaoDto> GerarLogDoacoes(ConsultarLogDto consultaDto)
+        {
+            if (consultaDto.UnidadeID == Guid.Empty)
+            {
+                throw new DomainException("O ID da unidade consultada é obrigatório.");
+            }
+
+            // 1. Busca as entidades
+            List<Transferencia> transferencias = _repository.ObterTransferenciasParaLog(
+                consultaDto.UnidadeID,
+                consultaDto.TipoItemID,
+                consultaDto.DataFiltro
+            );
+
+            // 2. Transforma em DTO
+            var logs = transferencias.Select(TransferenciaConversao.MapearParaLogDto);
+
+            // 3. Filtra por fase de doação em memória se o front tiver enviado o parâmetro
+            if (!string.IsNullOrEmpty(consultaDto.FaseDoacao))
+            {
+                logs = logs.Where(l => l.FaseDoacao.Equals(consultaDto.FaseDoacao, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return logs.ToList();
+        }
+
         public void Adicionar(Guid usuarioID, CriarTransferenciaDto transferencia)
         {
             var usuario = _usuarioRepository.ObterPorId(usuarioID);
 
-            if(usuario == null)
+            if (usuario == null)
             {
                 throw new DomainException("Usuario não encontrado.");
             }
@@ -61,7 +87,7 @@ namespace API.Applications.Services
 
             var estado = _estadoTransferenciaRepository.ObterPorNome("Pendente");
 
-            if(estado == null)
+            if (estado == null)
             {
                 throw new DomainException("Estado 'Pendente' não encontrado.");
             }
