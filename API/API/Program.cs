@@ -13,7 +13,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-Env.Load();
+
+Env.TraversePath().Load();
 
 string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 

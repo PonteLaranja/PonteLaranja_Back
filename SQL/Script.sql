@@ -186,6 +186,10 @@ SELECT * FROM TipoUnidade
 SELECT * FROM TipoUsuario
 
 /* =====================================================
+   INSERCAO DE DADOS PARA TESTE
+   ===================================================== */
+
+/* =====================================================
    INSERCAO DE USUARIOS
    ===================================================== */
 INSERT INTO Usuario (Nome, Email, Senha, TipoUsuarioID)

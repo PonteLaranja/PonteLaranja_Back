@@ -23,7 +23,7 @@ namespace API.Controllers
         {
             List<LerUnidadeDto> unidades = _service.Listar();
 
-            return Ok(_service.Listar());
+            return Ok(unidades);
         }
 
         [HttpGet("{id}")]
@@ -40,7 +40,24 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [HttpPost("rank-prioridade")]
+        public ActionResult<List<RankPrioridadeDto>> ObterRankPrioridade(ConsultarRankDto consultaDto)
+        {
+            try
+            {
+                List<RankPrioridadeDto> ranking = _service.ObterRankPrioridade(consultaDto);
+                return Ok(ranking);
+            }
+            catch (DomainException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro interno ao processar o ranking de prioridades.");
+            }
+        }
+
         [HttpPost]
         public ActionResult Cadastrar(CadastrarUnidadeDto criarDto)
         {
@@ -55,8 +72,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
-        [HttpPut]
+        [HttpPut("{id}")]
         public ActionResult Atualizar(Guid id, CadastrarUnidadeDto atualizarDto)
         {
             try
@@ -70,8 +86,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult Inativar(Guid id)
         {
             try

@@ -145,14 +145,17 @@ namespace API.Repositories
 
         public int ObterEstoqueAtualPorTipoItem(Guid unidadeId, Guid tipoItemId, string? tamanho = null)
         {
-            // 1. Busca os itens ativos daquela unidade e tipo
+            // 1. Busca os itens ativos incluindo o TipoMedida em uma ÚNICA consulta ultra rápida (AsNoTracking)
             var query = _context.Item
+                .AsNoTracking()
+                .Include(i => i.TipoMedida)
                 .Where(i => i.Ativo && i.UnidadeID == unidadeId && i.TipoItemID == tipoItemId);
 
-            // 2. Se for Roupa e o front passou um tamanho (ex: "M"), filtramos pelo TipoMedidaID correspondente
+            // 2. Filtra pelo ID do TipoMedida correspondente se tamanho for informado
             if (!string.IsNullOrEmpty(tamanho))
             {
                 var tipoMedidaId = _context.TipoMedida
+                    .AsNoTracking()
                     .Where(tm => tm.NomeTipoMedida == tamanho)
                     .Select(tm => tm.TipoMedidaID)
                     .FirstOrDefault();
@@ -170,17 +173,15 @@ namespace API.Repositories
 
             foreach (var item in itens)
             {
-                var tipoMedida = _context.TipoMedida
-                    .FirstOrDefault(tm => tm.TipoMedidaID == item.TipoMedidaID);
+                // Agora NÃO fazemos mais consulta ao banco aqui dentro! Usamos a propriedade que já veio no Include.
+                var tipoMedida = item.TipoMedida;
 
-                // Se for Kg ou Litro, multiplicamos Medida por Quantidade (ex: 10 pacotes de 5kg = 50kg)
                 if (tipoMedida != null && (tipoMedida.NomeTipoMedida == "Kg" || tipoMedida.NomeTipoMedida == "Litro"))
                 {
                     totalCalculado += item.Medida * item.Quantidade;
                 }
                 else
                 {
-                    // Se for Brinquedo (Nulo) ou Roupa (PP, P, M, G, GG), somamos apenas as unidades/peças brutas
                     totalCalculado += item.Quantidade;
                 }
             }
@@ -191,16 +192,18 @@ namespace API.Repositories
         public int ObterTotalBaixasSazonais(Guid unidadeId, Guid tipoItemId, int mes, string? tamanho = null)
         {
             var query = _context.Item
+                .AsNoTracking()
+                .Include(i => i.TipoMedida)
                 .Where(i => !i.Ativo
                          && i.UnidadeID == unidadeId
                          && i.TipoItemID == tipoItemId
                          && i.DataDoacao != null
                          && i.DataDoacao.Value.Month == mes);
 
-            // Se o filtro de tamanho (ex: "G") foi enviado, filtramos o histórico de baixas por ele
             if (!string.IsNullOrEmpty(tamanho))
             {
                 var tipoMedidaId = _context.TipoMedida
+                    .AsNoTracking()
                     .Where(tm => tm.NomeTipoMedida == tamanho)
                     .Select(tm => tm.TipoMedidaID)
                     .FirstOrDefault();
@@ -211,7 +214,27 @@ namespace API.Repositories
                 }
             }
 
-            return query.Count();
+            var itensDoados = query.ToList();
+            if (!itensDoados.Any()) return 0;
+
+            decimal totalBaixas = 0;
+
+            // CORREÇÃO CRÍTICA: Computa o volume real doado (Sum/Multiplicação) em vez de apenas contar linhas
+            foreach (var item in itensDoados)
+            {
+                var tipoMedida = item.TipoMedida;
+
+                if (tipoMedida != null && (tipoMedida.NomeTipoMedida == "Kg" || tipoMedida.NomeTipoMedida == "Litro"))
+                {
+                    totalBaixas += item.Medida * item.Quantidade;
+                }
+                else
+                {
+                    totalBaixas += item.Quantidade;
+                }
+            }
+
+            return (int)Math.Ceiling(totalBaixas);
         }
     }
 }
