@@ -25,6 +25,21 @@ namespace API.Controllers
             return Ok(_service.Listar());
         }
 
+        [HttpGet("log-doacoes")]
+        public IActionResult ObterLogDoacoes([FromQuery] ConsultarLogDto consultaDto)
+        {
+            try
+            {
+                var logs = _service.GerarLogDoacoes(consultaDto);
+
+                return Ok(logs);
+            }
+            catch (DomainException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [Authorize]
         [HttpPost]
         public ActionResult Adicionar(CriarTransferenciaDto dto)
@@ -39,10 +54,11 @@ namespace API.Controllers
                 }
 
                 Guid usuarioId = Guid.Parse(usuarioIdClaim);
-                _service.Adicionar(usuarioId,dto);
+                _service.Adicionar(usuarioId, dto);
 
                 return Created();
-            } catch (DomainException ex)
+            }
+            catch (DomainException ex)
             {
                 return BadRequest(ex.Message);
             }

@@ -58,6 +58,38 @@ namespace API.Repositories
                 .Where(t => t.UnidadeOrigemID == id).ToList();
         }
 
+        public List<Transferencia> ObterTransferenciasParaLog(Guid unidadeId, Guid? tipoItemId, DateTime? dataFiltro)
+        {
+            // Query básica trazendo os relacionamentos e aplicando AsNoTracking para leitura rápida
+            var query = _context.Transferencia.AsNoTracking()
+                .Include(t => t.EstadoTransferencia)
+                .Include(t => t.Item)
+                    .ThenInclude(i => i.Usuario)    // Essencial para pegar o nome do Doador na Service
+                .Include(t => t.Item)
+                    .ThenInclude(i => i.TipoMedida) // Essencial para pegar a Medida/TipoMedida
+                .Include(t => t.Item.TipoItem)
+                .Include(t => t.UnidadeDestino)
+                .Include(t => t.UnidadeOrigem)
+                // Filtra registros onde a unidade consultada participa como ORIGEM OU DESTINO
+                // No banco deve haver uma unidade fictícia para simular doações às unidades de coleta, para não tornar o atributo unidade de origem como nulável
+                .Where(t => t.UnidadeDestinoID == unidadeId || t.UnidadeOrigemID == unidadeId);
+
+            // Filtro opcional por tipo de item (Alimento, Roupa, etc.)
+            if (tipoItemId.HasValue)
+            {
+                query = query.Where(t => t.Item.TipoItemID == tipoItemId.Value);
+            }
+
+            // Filtro opcional por Data (compara apenas o dia, ignorando horas/minutos)
+            if (dataFiltro.HasValue)
+            {
+                query = query.Where(t => t.DataEnvio.HasValue && t.DataEnvio.Value.Date == dataFiltro.Value.Date);
+            }
+
+            // Ordena por data mais recente primeiro e executa
+            return query.OrderByDescending(t => t.DataEnvio).ToList();
+        }
+
         public bool ItemExiste(Guid id)
         {
             return _context.Item.Any(i => i.ItemID == id);

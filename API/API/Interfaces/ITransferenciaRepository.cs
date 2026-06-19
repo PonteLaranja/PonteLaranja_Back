@@ -10,6 +10,8 @@ namespace API.Interfaces
         List<Transferencia> ObterPorUnidadeDestino(Guid id);
         List<Transferencia> ObterPorUnidadeOrigem(Guid id);
 
+        List<Transferencia> ObterTransferenciasParaLog(Guid unidadeId, Guid? tipoItemId, DateTime? dataFiltro);
+
         void Cadastrar(Transferencia transferencia);
         void Atualizar(Guid id, Transferencia transferencia);
 
