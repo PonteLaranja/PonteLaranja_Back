@@ -186,7 +186,7 @@ SELECT * FROM TipoUnidade
 SELECT * FROM TipoUsuario
 
 /* =====================================================
-   INSERCAO DE ATRIBUTOS INERENTES PARA TESTE
+   INSERCAO DE DADOS PARA TESTE
    ===================================================== */
 
 /* =====================================================
