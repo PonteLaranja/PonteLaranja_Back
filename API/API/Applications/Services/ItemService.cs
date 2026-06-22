@@ -8,7 +8,8 @@ namespace API.Applications.Services
     public class ItemService
     {
         private readonly IItemRepository _repository;
-        public ItemService(IItemRepository repository) { 
+        public ItemService(IItemRepository repository)
+        {
             _repository = repository;
         }
 
@@ -19,7 +20,7 @@ namespace API.Applications.Services
                 throw new DomainException("Tipo de item não encontrado.");
             }
 
-            if(medidaId == null && !_repository.TipoMedidaExiste(medidaId.Value))
+            if (medidaId == null && !_repository.TipoMedidaExiste(medidaId.Value))
             {
                 throw new DomainException("Tipo de medida não encontrado.");
             }
@@ -35,6 +36,17 @@ namespace API.Applications.Services
             }
             return true;
         }
+
+        public LerItemDto ObterPorId(Guid id)
+        {
+            var item = _repository.ObterPorId(id);
+            if (item == null)
+            {
+                throw new DomainException("Item não encontrado.");
+            }
+            return ItemConversao.ConverterParaDto(item);
+        }
+
         public List<LerItemDto> Listar()
         {
             return _repository.Listar().Select(i => ItemConversao.ConverterParaDto(i)).ToList();
@@ -90,7 +102,7 @@ namespace API.Applications.Services
             ValidarIds(atualizarItemDto.TipoItemID, atualizarItemDto.TipoMedidaID, atualizarItemDto.UsuarioID, atualizarItemDto.UnidadeID);
 
             if (atualizarItemDto.NomeItem != null)
-            itemBanco.NomeItem = atualizarItemDto.NomeItem;
+                itemBanco.NomeItem = atualizarItemDto.NomeItem;
 
             if (atualizarItemDto.DataRecebimento != null)
                 itemBanco.DataRecebimento = atualizarItemDto.DataRecebimento;
