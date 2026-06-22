@@ -35,7 +35,8 @@ namespace API.Repositories
 
         public Usuario ObterPorEmail(string email)
         {
-            return _context.Usuario.FirstOrDefault(u => u.Email == email);
+            return _context.Usuario
+                .Include(u => u.TipoUsuario).FirstOrDefault(u => u.Email == email);
         }
 
         public bool EmailExiste(string email)

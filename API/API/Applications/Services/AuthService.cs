@@ -33,7 +33,6 @@ namespace API.Applications.Services
             if (usuario == null)
                 throw new DomainException("Usuário invalido");
 
-            Console.WriteLine(usuario.Senha);
             if (!CriptografarUsuario.HashSenha(loginDto.senha).SequenceEqual(usuario.Senha))
                 throw new DomainException("Senha invalida");
             

@@ -24,6 +24,7 @@ namespace API.Controllers
         }
 
         [HttpGet("nome/{nome}")]
+        [Consumes("Multipart/form-data")]
         public ActionResult<LerTipoItemDto> ObterPorNome(string nome)
         {
             try

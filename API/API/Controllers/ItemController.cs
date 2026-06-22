@@ -24,6 +24,19 @@ namespace API.Controllers
             return Ok(_itemService.Listar());
         }
 
+        [HttpGet("{id}")]
+        public ActionResult<LerItemDto> ObterPorId(Guid id)
+        {
+            try
+            {
+                return Ok(_itemService.ObterPorId(id));
+            }
+            catch (DomainException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [Authorize(Roles = "Responsavel,Administrador")]
         [HttpGet("listarTipo/{id}")]
         public ActionResult<List<LerItemDto>> ListarPorTipo(Guid id)
@@ -31,7 +44,8 @@ namespace API.Controllers
             try
             {
                 return Ok(_itemService.ListarPorTipo(id));
-            } catch(DomainException ex)
+            }
+            catch (DomainException ex)
             {
                 return NotFound(ex.Message);
             }
@@ -59,7 +73,8 @@ namespace API.Controllers
             {
                 _itemService.Adicionar(criarItemDto);
                 return Ok();
-            } catch(DomainException ex)
+            }
+            catch (DomainException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -73,7 +88,8 @@ namespace API.Controllers
             {
                 _itemService.Atualizar(id, atualizarItemDto);
                 return NoContent();
-            } catch(DomainException ex)
+            }
+            catch (DomainException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -87,7 +103,8 @@ namespace API.Controllers
             {
                 _itemService.Inativar(id);
                 return NoContent();
-            } catch(DomainException ex)
+            }
+            catch (DomainException ex)
             {
                 return BadRequest(ex.Message);
             }
