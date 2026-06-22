@@ -22,6 +22,8 @@ namespace API.Interfaces
 
         void Inativar(Guid unidadeId);
 
+        string? ObterNomeTipoItemPorId(Guid tipoItemId);
+
         // Retorna a quantidade total de itens ativos filtrados por tipo e, opcionalmente, por tamanho (ex: Roupas).
         int ObterEstoqueAtualPorTipoItem(Guid unidadeId, Guid tipoItemId, string? tamanho = null);
 

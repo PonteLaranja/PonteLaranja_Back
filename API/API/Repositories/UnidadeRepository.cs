@@ -60,6 +60,15 @@ namespace API.Repositories
                 .FirstOrDefault(u => u.NomeUnidade.ToLower() == nomeUnidade.ToLower() && u.Ativo);
         }
 
+        public string? ObterNomeTipoItemPorId(Guid tipoItemId)
+        {
+            return _context.TipoItem
+                .AsNoTracking()
+                .Where(t => t.TipoItemID == tipoItemId)
+                .Select(t => t.NomeTipoItem)
+                .FirstOrDefault();
+        }
+
         public Usuario BuscarUsuario(Guid id)
         {
             return _context.Usuario
@@ -145,13 +154,13 @@ namespace API.Repositories
 
         public int ObterEstoqueAtualPorTipoItem(Guid unidadeId, Guid tipoItemId, string? tamanho = null)
         {
-            // 1. Busca os itens ativos incluindo o TipoMedida em uma ÚNICA consulta ultra rápida (AsNoTracking)
+            // 1. Busca os itens ativos na unidade e categoria alvo
             var query = _context.Item
                 .AsNoTracking()
                 .Include(i => i.TipoMedida)
                 .Where(i => i.Ativo && i.UnidadeID == unidadeId && i.TipoItemID == tipoItemId);
 
-            // 2. Filtra pelo ID do TipoMedida correspondente se tamanho for informado
+            // 2. Filtra pelo tamanho (NomeTipoMedida) de forma performática se fornecido
             if (!string.IsNullOrEmpty(tamanho))
             {
                 var tipoMedidaId = _context.TipoMedida
@@ -173,9 +182,9 @@ namespace API.Repositories
 
             foreach (var item in itens)
             {
-                // Agora NÃO fazemos mais consulta ao banco aqui dentro! Usamos a propriedade que já veio no Include.
                 var tipoMedida = item.TipoMedida;
 
+                // Multiplicação precisa defendida para Alimentos e Bebidas (Kg / Litro)
                 if (tipoMedida != null && (tipoMedida.NomeTipoMedida == "Kg" || tipoMedida.NomeTipoMedida == "Litro"))
                 {
                     totalCalculado += item.Medida * item.Quantidade;
@@ -191,14 +200,15 @@ namespace API.Repositories
 
         public int ObterTotalBaixasSazonais(Guid unidadeId, Guid tipoItemId, int mes, string? tamanho = null)
         {
+            // Baixa real monitorada via Soft Delete (!Ativo) e DataDoacao preenchida na tabela Item
             var query = _context.Item
                 .AsNoTracking()
                 .Include(i => i.TipoMedida)
-                .Where(i => !i.Ativo
+                .Where(i => !i.Ativo // Item doado/excluido do estoque final
                          && i.UnidadeID == unidadeId
                          && i.TipoItemID == tipoItemId
-                         && i.DataDoacao != null
-                         && i.DataDoacao.Value.Month == mes);
+                         && i.DataDoacao != null // Verifica se a coluna DATETIME2 possui valor
+                         && i.DataDoacao.Value.Month == mes); // Mapeia o mes da doação real
 
             if (!string.IsNullOrEmpty(tamanho))
             {
@@ -219,7 +229,6 @@ namespace API.Repositories
 
             decimal totalBaixas = 0;
 
-            // CORREÇÃO CRÍTICA: Computa o volume real doado (Sum/Multiplicação) em vez de apenas contar linhas
             foreach (var item in itensDoados)
             {
                 var tipoMedida = item.TipoMedida;
